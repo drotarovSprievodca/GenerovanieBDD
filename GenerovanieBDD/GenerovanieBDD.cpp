@@ -8,7 +8,7 @@
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\misex3.pla");
+    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\alu4.pla");
 
     if (pla_file.has_value()) {
         teddy::pla_file* pla = &pla_file.value();
