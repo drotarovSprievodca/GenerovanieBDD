@@ -8,7 +8,7 @@
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\alu4.pla");
+    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\5xp1.pla");
 
     if (pla_file.has_value()) {
         teddy::pla_file* pla = &pla_file.value();
@@ -44,5 +44,13 @@ int main()
             std::cout << "\n";
         }
         std::cout << "" << std::endl;
+
+        teddy::bdd_manager manager(pla->get_variable_count(), 1'000);
+        auto vector_of_diagrams = manager.from_pla(*pla, teddy::fold_type::Tree);
+        for (auto diagram : vector_of_diagrams) {
+            manager.to_dot_graph(std::cout, diagram);
+            std::ofstream ofst("f.dot");
+            manager.to_dot_graph(ofst, diagram);
+        }
     }
 }
