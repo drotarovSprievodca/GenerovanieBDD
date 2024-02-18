@@ -10,29 +10,35 @@
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\5xp1.pla");
+    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\test.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla
 
     if (pla_file.has_value()) {
 
         teddy::pla_file* pla = &pla_file.value();
 
+        int number_of_vars = pla->get_variable_count();
+
         std::cout << "Number of function in file: " << pla->get_function_count() << std::endl;
-        std::cout << "Number of variables in the file: " << pla->get_variable_count() << std::endl;
+        std::cout << "Number of variables in the file: " << number_of_vars << std::endl;
         std::cout << "Number of lines in the file: " << pla->get_line_count() << std::endl;
 
-        std::cout << "Input labels: " << std::endl;
         std::vector<std::string> const& input_labels = pla->get_input_labels();
-        for (auto label : input_labels) {
-            std::cout << label << " ";
+        if (input_labels.size() > 0) {
+            std::cout << "Input labels: " << std::endl;
+            for (auto label : input_labels) {
+                std::cout << label << " ";
+            }
+            std::cout << "" << std::endl;
         }
-        std::cout << "" << std::endl;
-
-        std::cout << "Output labels: " << std::endl;
+        
         std::vector<std::string> const& output_labels = pla->get_output_labels();
-        for (auto label : output_labels) {
-            std::cout << label << " ";
+        if (output_labels.size() > 0) {
+            std::cout << "Output labels: " << std::endl;
+            for (auto label : output_labels) {
+                std::cout << label << " ";
+            }
+            std::cout << "" << std::endl;
         }
-        std::cout << "" << std::endl;
 
         std::cout << "Lines: " << std::endl;
         std::vector<teddy::pla_file::pla_line> const& lines = pla->get_lines();
@@ -48,14 +54,47 @@ int main()
         }
         std::cout << "" << std::endl;
         
-
-        teddy::bss_manager manager(pla->get_variable_count(), 1'000);
+        teddy::bss_manager manager(number_of_vars, 1'000);
         teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[0];
-        // premenna x0 klesne z 1 -> 0 a funkcia klesne z 1 -> 0
+        // prints diagram to console
+        // manager.to_dot_graph(std::cout, diagram);
+        // prints diagram to file
+        std::ofstream ofst_diag("diagram.dot");
+        manager.to_dot_graph(ofst_diag, diagram);
+        // converts .dot file to .png file 
+        // .\dot.exe -Tpng diagram.dot -o output.png
+
+        // returns number of nodes in the diagram including terminal nodes
+        int node_count = manager.get_node_count(diagram);
+        std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count <<  std::endl;
+
+        // variable x0 decreases from 1 -> 0 while function decreases from 1 -> 0
         teddy::bss_manager::diagram_t dpbd = manager.dpld({ 0, 1, 0 }, teddy::dpld::type_1_decrease(1), diagram);
-        manager.to_dot_graph(std::cout, diagram);
-        std::ofstream ofst("f.dot");
-        manager.to_dot_graph(ofst, diagram);
+        //std::ofstream ofst_dpbd("dpbd.dot");
+        //manager.to_dot_graph(ofst_dpbd, dpbd);
+
+        // variables with dpbd == 1
+        std::vector<std::vector<int>> vars_with_ones = manager.satisfy_all<std::vector<int>>(1, dpbd);
+        int number_of_ones_in_dpbd = vars_with_ones.size() / 2;
+        std::cout << "Number of ones in dpbd: " << number_of_ones_in_dpbd << std::endl;
+
+        std::vector<std::vector<int>> vars_with_zeros = manager.satisfy_all<std::vector<int>>(0, dpbd);
+        int number_of_zeros_in_dpbd = vars_with_zeros.size();
+
+
+
+
+
+        
+        for (auto var : vars_with_ones) {
+            for (int i = 0; i < number_of_vars; ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
+        }
+        
+
+
 
 
 
