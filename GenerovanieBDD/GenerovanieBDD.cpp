@@ -10,7 +10,7 @@
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\test.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla
+    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\5xp1_bez_druhej_derivacie.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla
 
     if (pla_file.has_value()) {
 
@@ -40,6 +40,7 @@ int main()
             std::cout << "" << std::endl;
         }
 
+        /*
         std::cout << "Lines: " << std::endl;
         std::vector<teddy::pla_file::pla_line> const& lines = pla->get_lines();
         for (auto line : lines) {
@@ -53,9 +54,21 @@ int main()
             std::cout << "\n";
         }
         std::cout << "" << std::endl;
+        */
         
         teddy::bss_manager manager(number_of_vars, 1'000);
-        teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[0];
+        teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[0]; //first function
+
+        /*
+        auto vector_of_diagrams = manager.from_pla(*pla, teddy::fold_type::Tree);
+        int poradie = 0;
+        for (auto diagram : vector_of_diagrams) {
+            std::ofstream ofst("diag_" + std::to_string(poradie) + ".dot");
+            manager.to_dot_graph(ofst, diagram);
+            poradie++;
+        }
+        */
+
         // prints diagram to console
         // manager.to_dot_graph(std::cout, diagram);
         // prints diagram to file
@@ -75,41 +88,34 @@ int main()
 
         // variables with dpbd == 1
         std::vector<std::vector<int>> vars_with_ones = manager.satisfy_all<std::vector<int>>(1, dpbd);
-        int number_of_ones_in_dpbd = vars_with_ones.size() / 2;
+        int number_of_ones_in_dpbd = vars_with_ones.size();
         std::cout << "Number of ones in dpbd: " << number_of_ones_in_dpbd << std::endl;
 
-        std::vector<std::vector<int>> vars_with_zeros = manager.satisfy_all<std::vector<int>>(0, dpbd);
-        int number_of_zeros_in_dpbd = vars_with_zeros.size();
-
-
-
-
-
-        
+        ///*
         for (auto var : vars_with_ones) {
             for (int i = 0; i < number_of_vars; ++i) {
                 std::cout << var[i];
             }
             std::cout << " ";
         }
-        
+        std::cout << "" << std::endl;
+        //*/
 
+        std::cout << "" << std::endl;
 
-
-
-
-
-
-
-
+        // variables with dpbd == 0
+        std::vector<std::vector<int>> vars_with_zeros = manager.satisfy_all<std::vector<int>>(0, dpbd);
+        int number_of_zeros_in_dpbd = vars_with_zeros.size();
+        std::cout << "Number of zeros in dpbd: " << number_of_zeros_in_dpbd << std::endl;
 
         /*
-        auto vector_of_diagrams = manager.from_pla(*pla, teddy::fold_type::Tree);
-        for (teddy::diagram<void, teddy::degrees::fixed<2>> diagram : vector_of_diagrams) {
-            manager.to_dot_graph(std::cout, diagram);
-            std::ofstream ofst("f.dot");
-            manager.to_dot_graph(ofst, diagram);
+        for (auto var : vars_with_zeros) {
+            for (int i = 0; i < number_of_vars; ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
         }
+        std::cout << "" << std::endl;
         */
     }
 }
