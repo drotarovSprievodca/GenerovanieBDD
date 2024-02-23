@@ -10,7 +10,7 @@
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\5xp1_bez_druhej_derivacie.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla
+    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\misex3.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla
 
     if (pla_file.has_value()) {
 
@@ -81,6 +81,39 @@ int main()
         int node_count = manager.get_node_count(diagram);
         std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count <<  std::endl;
 
+
+        std::cout << "Number of variables: " << manager.get_var_count() << std::endl;
+
+        std::cout << "Order before reorder:" << std::endl;
+        std::vector<int> order_before = manager.get_order();
+        for (auto o : order_before) {
+            std::cout << o << std::endl;
+        }
+
+        manager.set_auto_reorder(true); // Enables or disables automatic variable reordering.
+
+        manager.force_reorder(); // Runs variable reordering heuristic.
+
+        std::cout << "Order after reorder:" << std::endl;
+        std::vector<int> order_after = manager.get_order();
+        for (auto o : order_after) {
+            std::cout << o << std::endl;
+        }
+
+        std::ofstream ofst_diag_after("diagram_after.dot");
+        manager.to_dot_graph(ofst_diag_after, diagram);
+
+
+
+
+        /*
+        std::cout << "Domains:" << std::endl;
+        std::vector<int> domains = manager.get_domains();
+        for (auto d : domains) {
+            std::cout << d << std::endl;
+        }
+        */
+
         // variable x0 decreases from 1 -> 0 while function decreases from 1 -> 0
         teddy::bss_manager::diagram_t dpbd = manager.dpld({ 0, 1, 0 }, teddy::dpld::type_1_decrease(1), diagram);
         //std::ofstream ofst_dpbd("dpbd.dot");
@@ -90,8 +123,8 @@ int main()
         std::vector<std::vector<int>> vars_with_ones = manager.satisfy_all<std::vector<int>>(1, dpbd);
         int number_of_ones_in_dpbd = vars_with_ones.size();
         std::cout << "Number of ones in dpbd: " << number_of_ones_in_dpbd << std::endl;
-
-        ///*
+    
+        /*
         for (auto var : vars_with_ones) {
             for (int i = 0; i < number_of_vars; ++i) {
                 std::cout << var[i];
@@ -99,7 +132,7 @@ int main()
             std::cout << " ";
         }
         std::cout << "" << std::endl;
-        //*/
+        */
 
         std::cout << "" << std::endl;
 
