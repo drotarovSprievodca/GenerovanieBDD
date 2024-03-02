@@ -4,13 +4,14 @@
 #include <iostream>
 #include <vector>
 #include <array>
+#include <libteddy/details/types.hpp>
 #include <libteddy/details/pla_file.hpp>
 #include "libteddy/details/reliability_manager.hpp"
 #include <libteddy/reliability.hpp>
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\misex3.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla
+    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\bw.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla  bw.pla
 
     if (pla_file.has_value()) {
 
@@ -56,8 +57,17 @@ int main()
         std::cout << "" << std::endl;
         */
         
-        teddy::bss_manager manager(number_of_vars, 1'000);
+        std::vector<teddy::int32> order = std::vector<teddy::int32>(number_of_vars);
+        order[0] = 4;
+        order[1] = 3;
+        order[2] = 0;
+        order[3] = 1;
+        order[4] = 2;
+
+        teddy::bss_manager manager(number_of_vars, 1'000);//, order);
         teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[0]; //first function
+        //teddy::bss_manager
+        
 
         /*
         auto vector_of_diagrams = manager.from_pla(*pla, teddy::fold_type::Tree);
@@ -81,20 +91,23 @@ int main()
         int node_count = manager.get_node_count(diagram);
         std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count <<  std::endl;
 
-
         std::cout << "Number of variables: " << manager.get_var_count() << std::endl;
 
         std::cout << "Order before reorder:" << std::endl;
+        node_count = manager.get_node_count(diagram);
+        std::cout << "Number of nodes in diagram (including terminal nodes) before reordering: " << node_count << std::endl;
         std::vector<int> order_before = manager.get_order();
         for (auto o : order_before) {
             std::cout << o << std::endl;
         }
 
-        manager.set_auto_reorder(true); // Enables or disables automatic variable reordering.
+        manager.set_auto_reorder(false); // Enables or disables automatic variable reordering.
 
         manager.force_reorder(); // Runs variable reordering heuristic.
 
         std::cout << "Order after reorder:" << std::endl;
+        node_count = manager.get_node_count(diagram);
+        std::cout << "Number of nodes in diagram (including terminal nodes) after reordering: " << node_count << std::endl;
         std::vector<int> order_after = manager.get_order();
         for (auto o : order_after) {
             std::cout << o << std::endl;
