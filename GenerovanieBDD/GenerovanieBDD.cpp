@@ -10,12 +10,12 @@
 #include <libteddy/reliability.hpp>
 #include <algorithm>
 
-struct order {
+struct var {
     int variable;
     double true_density;
 };
 
-bool compare_by_true_density(const order& a, const order& b) {
+bool compare_by_true_density(const var& a, const var& b) {
     return a.true_density > b.true_density;
 }
 
@@ -101,7 +101,7 @@ int main()
 
         //manager.force_reorder(); // Runs variable reordering heuristic.
 
-        std::vector<order> list_for_reordering = std::vector<order>(number_of_vars);
+        std::vector<var> list_for_reordering = std::vector<var>(number_of_vars);
 
         for (int i = 0; i < number_of_vars; ++i) {
             // variable xi decreases from 1 -> 0 while function decreases from 1 -> 0
@@ -157,7 +157,7 @@ int main()
 
             double true_density = td_for_decrease + td_for_increase;
 
-            order td_var;
+            var td_var;
             td_var.true_density = true_density;
             td_var.variable = i;
 
