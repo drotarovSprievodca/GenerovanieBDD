@@ -16,7 +16,7 @@ struct var {
 };
 
 bool compare_by_true_density(const var& a, const var& b) {
-    return a.true_density > b.true_density;
+    return a.true_density < b.true_density;
 }
 
 int main()
