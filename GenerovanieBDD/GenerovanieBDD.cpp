@@ -9,6 +9,7 @@
 #include "libteddy/details/reliability_manager.hpp"
 #include <libteddy/reliability.hpp>
 #include <algorithm>
+#include <windows.h>
 
 struct var {
     int variable;
@@ -16,17 +17,125 @@ struct var {
 };
 
 bool compare_by_true_density(const var& a, const var& b) {
-    return a.true_density < b.true_density;
+    return a.true_density > b.true_density;
 }
 
 int main()
 {
-    std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\5xp1.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla  bw.pla
+    std::string comparing_options[] = {
+        "ORIGINAL",
+        "ASCENDING_TD",
+        "DESCENDING_TD",
+        "RANDOM"
+    };
 
-    if (pla_file.has_value()) {
+    for (std::string comparing_option : comparing_options) {
+        std::cout << comparing_option << std::endl;
+        std::string directory_path = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\ALL_PLA\\";
+        WIN32_FIND_DATA find_file_data;
+        HANDLE h_find = FindFirstFile((directory_path + "*").c_str(), &find_file_data);
 
-        teddy::pla_file* pla = &pla_file.value();
-        int number_of_vars = pla->get_variable_count();
+        if (h_find == INVALID_HANDLE_VALUE) {
+            std::cerr << "Could not open directory!" << std::endl;
+            return 1;
+        }
+        
+        int sum_of_node_counts = 0;
+        int number_of_diagrams = 0;
+
+        do {
+            if (std::string(find_file_data.cFileName) == "." || std::string(find_file_data.cFileName) == "..") { 
+                continue; 
+            }
+            std::string pla_path = directory_path + find_file_data.cFileName;
+
+            std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file(pla_path);
+            if (!pla_file.has_value()) { 
+                continue; 
+            }
+
+            teddy::pla_file* pla = &pla_file.value();
+            int number_of_vars = pla->get_variable_count();
+            int number_of_functions = pla->get_function_count();
+
+            if (comparing_option == "ORIGINAL") {
+                // creating manager with default order of variables
+                teddy::bss_manager manager(number_of_vars, 33'000);
+                manager.set_auto_reorder(false); // Disable automatic variable reordering.
+
+                std::cout << "There is " << std::to_string(number_of_functions) << " functions in file: " + std::string(find_file_data.cFileName) << std::endl;
+                for (int i = 0; i < number_of_functions; ++i) {
+                    teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[i];
+                    int node_count = manager.get_node_count(diagram);
+                    std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
+                    sum_of_node_counts += node_count;
+                    number_of_diagrams += 1;
+                }
+                std::cout << '\n' << std::endl;
+
+            } else if (comparing_option == "ASCENDING_TD") {
+                // pass
+            } else if (comparing_option == "DESCENDING_TD") {
+                // pass
+            } else if (comparing_option == "RANDOM") {
+                // pass
+            }
+
+        } while (FindNextFile(h_find, &find_file_data) != 0);
+        FindClose(h_find);
+        if (number_of_diagrams != 0) {
+            double average_number_of_nodes = sum_of_node_counts / number_of_diagrams;
+            std::cout << "Average number of nodes with " + comparing_option + " order is: " + std::to_string(average_number_of_nodes) << std::endl;
+        }  
+    }
+}
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //std::optional<teddy::pla_file> pla_file = teddy::pla_file::load_file("C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\PLA\\5xp1_pomlcka.pla"); //9sym.pla  alu4.pla  misex3.pla  5xp1.pla  bw.pla
+
+    //if (pla_file.has_value()) {
+
+        //teddy::pla_file* pla = &pla_file.value();
+        //int number_of_vars = pla->get_variable_count();
 
         // std::cout << "Number of function in file: " << pla->get_function_count() << std::endl;
         // std::cout << "Number of variables in the file: " << number_of_vars << std::endl;
@@ -50,8 +159,7 @@ int main()
             }
             std::cout << "" << std::endl;
         }
-        */
-
+        
         /*
         std::cout << "Lines: " << std::endl;
         std::vector<teddy::pla_file::pla_line> const& lines = pla->get_lines();
@@ -69,9 +177,9 @@ int main()
         */
 
         // creating manager with default order of variables
-        teddy::bss_manager manager_before(number_of_vars, 1'000);
-        manager_before.set_auto_reorder(false); // Disable automatic variable reordering.
-        teddy::bss_manager::diagram_t diagram_before = manager_before.from_pla(*pla, teddy::fold_type::Tree)[0]; //first function from pla file
+        //teddy::bss_manager manager_before(number_of_vars, 1'000);
+        //manager_before.set_auto_reorder(false); // Disable automatic variable reordering.
+        //teddy::bss_manager::diagram_t diagram_before = manager_before.from_pla(*pla, teddy::fold_type::Tree)[0]; //first function from pla file
 
         //std::cout << "Number of variables: " << manager.get_var_count() << std::endl;
 
@@ -81,8 +189,7 @@ int main()
         for (auto d : domains) {
             std::cout << d << std::endl;
         }
-        */
-
+        
         // prints diagram to console
         // manager.to_dot_graph(std::cout, diagram);
         // prints diagram to file
@@ -123,10 +230,10 @@ int main()
                 std::cout << " " << std::endl;
             }
             std::cout << "" << std::endl;
-            */
+            
 
             // variables with dpbd == 0
-            /*
+            
             std::vector<std::vector<int>> vars_with_zeros = manager_before.satisfy_all<std::vector<int>>(0, dpbd_decrease);
             int number_of_zeros_in_dpbd = vars_with_zeros.size();
             std::cout << "Number of zeros in dpbd: " << number_of_zeros_in_dpbd << std::endl;
@@ -138,7 +245,7 @@ int main()
                 std::cout << " " << std::endl;
             }
             std::cout << "" << std::endl;
-            */
+            
         
             // number of 1 in dpbd_decrease
             int number_of_ones_decrease = manager_before.satisfy_all<std::vector<int>>(1, dpbd_decrease).size() / 2;
@@ -147,11 +254,12 @@ int main()
             int number_of_zeros_decrease = manager_before.satisfy_all<std::vector<int>>(0, dpbd_decrease).size() / 2;
 
             // number of 1 in dpbd_increase
-            int number_of_ones_increase = manager_before.satisfy_all<std::vector<int>>(1, dpbd_increase).size() / 2;
+            //int number_of_ones_increase = manager_before.satisfy_all<std::vector<int>>(1, dpbd_increase).size() / 2;
 
             // number of 0 in dpbd_increase
-            int number_of_zeros_increase = manager_before.satisfy_all<std::vector<int>>(0, dpbd_increase).size() / 2;
+            //int number_of_zeros_increase = manager_before.satisfy_all<std::vector<int>>(0, dpbd_increase).size() / 2;
 
+            /*
             double td_for_decrease = (double)number_of_ones_decrease / (number_of_ones_decrease + number_of_zeros_decrease);
             double td_for_increase = (double)number_of_ones_increase / (number_of_ones_increase + number_of_zeros_increase);
 
@@ -162,7 +270,10 @@ int main()
             td_var.variable = i;
 
             list_for_reordering[i] = td_var;
-        }
+            */
+        //}
+
+        /*
 
         // Print the unsorted vector
         std::cout << "Before sorting: " << std::endl;
@@ -205,7 +316,7 @@ int main()
         }
         std::cout << std::endl;
 
-
+        */
 
 
 
@@ -238,5 +349,6 @@ int main()
         }
         std::cout << "" << std::endl;
         */
-    }
-}
+    //}
+//}
+
