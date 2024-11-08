@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <windows.h>
 #include <random>
+#include <cstdlib>
+#include <filesystem>
 
 struct var {
     int variable;
@@ -24,6 +26,33 @@ bool compare_by_true_density_desc(const var& a, const var& b) {
 
 bool compare_by_true_density_asc(const var& a, const var& b) {
     return a.true_density < b.true_density;
+}
+
+std::string generate_dot_file(std::string directory, std::string file_name, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager) {
+    std::string diagram_dot = directory + "\\diagrams\\dot_diag\\" + file_name + ".dot";
+    std::ofstream ofst_diag(diagram_dot);
+    manager.to_dot_graph(ofst_diag, diagram);
+    return diagram_dot;
+}
+
+bool convert_dot_file_to_png(std::string directory, std::string file_name, std::string diagram_dot) {
+    std::string graph_viz_bin = "C:\\\"Program Files\"\\Graphviz\\bin";
+
+    // create .png file path
+    std::string diagram_png = directory + "\\diagrams\\png_diag\\" + file_name + ".png";
+
+    // converts .dot file to .png file 
+    std::string command = graph_viz_bin + "\\dot.exe" + " -Tpng " + diagram_dot + " -o " + diagram_png;
+    return system(command.c_str()) == 0;
+}
+
+bool generate_diagram(std::string directory, WIN32_FIND_DATA find_file_data, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
+    // get file name
+    std::filesystem::path file_path(find_file_data.cFileName);
+    std::string file_name = "file_" + file_path.stem().string() + "_diagram_" + std::to_string(which_function);
+    // generate_dot_file() need to be returned for proper creating of dot file
+    std::string dot_file_path = generate_dot_file(directory, file_name, diagram, manager);
+    return convert_dot_file_to_png(directory, file_name, dot_file_path);
 }
 
 void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram) {
@@ -106,8 +135,8 @@ void use_derivatives(double &sum_of_node_counts,
         // save number of nodes of current diagram
         int node_count = manager_after.get_node_count(diagram_after);
 
-        manager_after.force_gc();
-        manager_after.clear_cache();
+        //manager_after.force_gc();
+        //manager_after.clear_cache();
 
         sum_of_node_counts += node_count;
         number_of_diagrams += 1;
@@ -115,18 +144,19 @@ void use_derivatives(double &sum_of_node_counts,
 }
 
 int main() {
-    std::string comparing_option = "ASCENDING_TD"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
+    std::string comparing_option = "ORIGINAL"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
     std::cout << comparing_option << std::endl;
-    std::string directory_path = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD\\WORKING_PLA\\";
+    std::string directory = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD";
+    std::string data_directory = directory + "\\TESTING\\";
     WIN32_FIND_DATA find_file_data;
-    HANDLE h_find = FindFirstFile((directory_path + "*").c_str(), &find_file_data);
+    HANDLE h_find = FindFirstFile((data_directory + "*").c_str(), &find_file_data);
 
     if (h_find == INVALID_HANDLE_VALUE) {
         std::cerr << "Could not open directory!" << std::endl;
         return 1;
     }
         
-    double sum_of_node_counts = 0.0; // sum of all nodes of all functions of all pla files in directory_path
+    double sum_of_node_counts = 0.0; // sum of all nodes of all functions of all pla files in data_directory
     double number_of_diagrams = 0.0; // number of all diagrams of all pla files (diagram == function)
 
     std::string pla_path = "";
@@ -138,7 +168,7 @@ int main() {
             continue;
         }
 
-        pla_path = directory_path + find_file_data.cFileName;
+        pla_path = data_directory + find_file_data.cFileName;
         pla_file = teddy::pla_file::load_file(pla_path);
         if (!pla_file.has_value()) { continue; }
         pla = &pla_file.value();
@@ -163,7 +193,12 @@ int main() {
 
                 // save number of nodes of current diagram
                 int node_count = manager.get_node_count(diagram);
-                //std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
+                std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
+                
+                if (!generate_diagram(directory, find_file_data, diagram, manager, i)) {
+                    std::cout << "Couldn't generate diagram!!!" << std::endl;
+                    return 1;
+                }
 
                 // delete &diagram;
                 
@@ -171,18 +206,18 @@ int main() {
                 sum_of_node_counts += node_count;
                 number_of_diagrams += 1.0;
             }
-            manager.force_gc();
-            manager.clear_cache();
+            // manager.force_gc();
+            // manager.clear_cache();
         }
         else if (comparing_option == "DESCENDING_TD") {
             use_derivatives(sum_of_node_counts, number_of_diagrams, number_of_functions, number_of_vars, manager, pla, false);
-            manager.force_gc();
-            manager.clear_cache();
+            //manager.force_gc();
+            //manager.clear_cache();
         }
         else if (comparing_option == "ASCENDING_TD") {
             use_derivatives(sum_of_node_counts, number_of_diagrams, number_of_functions, number_of_vars, manager, pla, true);
-            manager.force_gc();
-            manager.clear_cache();
+            //manager.force_gc();
+            //manager.clear_cache();
         }
         else if (comparing_option == "RANDOM") {
             int number_of_replications = 100;
