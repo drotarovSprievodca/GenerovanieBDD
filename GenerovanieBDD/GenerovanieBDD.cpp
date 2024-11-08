@@ -36,20 +36,13 @@ std::string generate_dot_file(std::string directory, std::string file_name, tedd
 }
 
 bool convert_dot_file_to_png(std::string directory, std::string file_name, std::string diagram_dot) {
-    std::string graph_viz_bin = "C:\\\"Program Files\"\\Graphviz\\bin";
-
-    // create .png file path
     std::string diagram_png = directory + "\\diagrams\\png_diag\\" + file_name + ".png";
-
-    // converts .dot file to .png file 
-    std::string command = graph_viz_bin + "\\dot.exe" + " -Tpng " + diagram_dot + " -o " + diagram_png;
+    std::string command = "C:\\\"Program Files\"\\Graphviz\\bin\\dot.exe -Tpng " + diagram_dot + " -o " + diagram_png;
     return system(command.c_str()) == 0;
 }
 
-bool generate_diagram(std::string directory, WIN32_FIND_DATA find_file_data, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
-    // get file name
-    std::filesystem::path file_path(find_file_data.cFileName);
-    std::string file_name = "file_" + file_path.stem().string() + "_diagram_" + std::to_string(which_function);
+bool generate_diagram(std::string directory, std::string file_name_witout_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
+    std::string file_name = file_name_witout_extension + "_diagram_" + std::to_string(which_function);
     // generate_dot_file() need to be returned for proper creating of dot file
     std::string dot_file_path = generate_dot_file(directory, file_name, diagram, manager);
     return convert_dot_file_to_png(directory, file_name, dot_file_path);
@@ -185,6 +178,10 @@ int main() {
         // Disable automatic variable reordering.
         manager.set_auto_reorder(false);
 
+        // get file name without extension
+        std::filesystem::path file_path(find_file_data.cFileName);
+        std::string file_name_without_extension = "file_" + file_path.stem().string();
+
         std::cout << "There is " << std::to_string(number_of_functions) << " functions with " << std::to_string(number_of_vars) << " variables in file: " + std::string(find_file_data.cFileName) << std::endl;
         if (comparing_option == "ORIGINAL") {
             for (int i = 0; i < number_of_functions; ++i) {
@@ -195,7 +192,7 @@ int main() {
                 int node_count = manager.get_node_count(diagram);
                 std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
                 
-                if (!generate_diagram(directory, find_file_data, diagram, manager, i)) {
+                if (!generate_diagram(directory, file_name_without_extension, diagram, manager, i)) {
                     std::cout << "Couldn't generate diagram!!!" << std::endl;
                     return 1;
                 }
