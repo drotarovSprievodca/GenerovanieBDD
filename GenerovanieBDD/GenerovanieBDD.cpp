@@ -41,20 +41,20 @@ bool convert_dot_file_to_png(std::string directory, std::string file_name, std::
     return system(command.c_str()) == 0;
 }
 
-bool generate_diagram(std::string directory, std::string file_name_witout_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
-    std::string file_name = file_name_witout_extension + "_diagram_" + std::to_string(which_function);
+bool generate_diagram(std::string directory, std::string file_name_without_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
+    std::string file_name = file_name_without_extension + "_diagram_" + std::to_string(which_function);
     // generate_dot_file() need to be returned for proper creating of dot file
     std::string dot_file_path = generate_dot_file(directory, file_name, diagram, manager);
     return convert_dot_file_to_png(directory, file_name, dot_file_path);
 }
 
-void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram) {
+void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     for (int i = 0; i < list_for_reordering.size(); ++i) {
-        // variable xi decreases from 1 -> 0 while function decreases from 1 -> 0
-        teddy::bss_manager::diagram_t dpbd_decrease = manager.dpld({ i, 1, 0 }, teddy::dpld::type_1_decrease(1), diagram);
-
         // variable xi increases from 0 -> 1 while function decreases from 1 -> 0
         teddy::bss_manager::diagram_t dpbd_increase = manager.dpld({ i, 0, 1 }, teddy::dpld::type_1_decrease(1), diagram);
+        
+        // variable xi decreases from 1 -> 0 while function decreases from 1 -> 0
+        teddy::bss_manager::diagram_t dpbd_decrease = manager.dpld({ i, 1, 0 }, teddy::dpld::type_1_decrease(1), diagram);
 
         // number of 1 in dpbd_decrease
         int number_of_ones_decrease = manager.satisfy_all<std::vector<int>>(1, dpbd_decrease).size() / 2;
@@ -72,10 +72,66 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
 
         //delete &dpbd_increase;
 
+        //////////////
+        // DECREASE //
+        //////////////
+        // variables with dpbd_decrease == 1
+        std::vector<std::vector<int>> vars_with_ones_decrease = manager.satisfy_all<std::vector<int>>(1, dpbd_decrease);
+        std::cout << "Number of ones in dpbd_decrease: " << number_of_ones_decrease << std::endl;
+
+        for (auto var : vars_with_ones_decrease) {
+            for (int i = 0; i < 3; ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
+        }
+        std::cout << "" << std::endl;
+
+        // variables with dpbd_decrease == 0
+        std::vector<std::vector<int>> vars_with_zeros_decrease = manager.satisfy_all<std::vector<int>>(0, dpbd_decrease);
+        std::cout << "Number of zeros in dpbd_decrease: " << number_of_zeros_decrease << std::endl;
+
+        for (auto var : vars_with_zeros_decrease) {
+            for (int i = 0; i < 3; ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
+        }
+        std::cout << "" << std::endl;
+
+        //////////////
+        // INCREASE //
+        //////////////
+        // variables with dpbd_increase == 1
+        std::vector<std::vector<int>> vars_with_ones_increase = manager.satisfy_all<std::vector<int>>(1, dpbd_increase);
+        std::cout << "Number of ones in dpbd_increase: " << number_of_ones_increase << std::endl;
+
+        for (auto var : vars_with_ones_increase) {
+            for (int i = 0; i < 3; ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
+        }
+        std::cout << "" << std::endl;
+
+        // variables with dpbd_increase == 0
+        std::vector<std::vector<int>> vars_with_zeros_increase = manager.satisfy_all<std::vector<int>>(0, dpbd_increase);
+        std::cout << "Number of zeros in dpbd_increase: " << number_of_zeros_increase << std::endl;
+
+        for (auto var : vars_with_zeros_increase) {
+            for (int i = 0; i < 3; ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
+        }
+        std::cout << "" << std::endl;
+        ///////////////////////////////////////////////////////
+
         double td_for_decrease = (double)number_of_ones_decrease / (number_of_ones_decrease + number_of_zeros_decrease);
         double td_for_increase = (double)number_of_ones_increase / (number_of_ones_increase + number_of_zeros_increase);
 
         double true_density = td_for_decrease + td_for_increase;
+        std::cout << "True density for function " << std::to_string(which_diagram) << " is: " << std::to_string(true_density) << std::endl;
 
         var td_var;
         td_var.true_density = true_density;
@@ -85,7 +141,9 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
     }
 }
 
-void use_derivatives(double &sum_of_node_counts, 
+void use_derivatives(std::string directory, 
+                     std::string file_name_without_extension,
+                     double &sum_of_node_counts, 
                      double &number_of_diagrams, 
                      int number_of_functions, 
                      int number_of_vars, 
@@ -101,7 +159,12 @@ void use_derivatives(double &sum_of_node_counts,
         std::vector<var> list_for_reordering = std::vector<var>(number_of_vars);
 
         // save all true densities of each variables in this function in list_for_reordering
-        get_td_of_all_vars_in_function(manager, list_for_reordering, diagram);
+        get_td_of_all_vars_in_function(manager, list_for_reordering, diagram, i);
+
+        std::cout << "Before sorting: " << std::endl;
+        for (const auto& item : list_for_reordering) {
+            std::cout << item.variable << " " << item.true_density << std::endl;
+        }
 
         //delete &diagram;
 
@@ -110,6 +173,11 @@ void use_derivatives(double &sum_of_node_counts,
             std::sort(list_for_reordering.begin(), list_for_reordering.end(), compare_by_true_density_asc);
         } else {
             std::sort(list_for_reordering.begin(), list_for_reordering.end(), compare_by_true_density_desc);
+        }
+
+        std::cout << "After sorting: " << std::endl;
+        for (const auto& item : list_for_reordering) {
+            std::cout << item.variable << " " << item.true_density << std::endl;
         }
         
         // vector with new order in teddy format 
@@ -127,6 +195,18 @@ void use_derivatives(double &sum_of_node_counts,
 
         // save number of nodes of current diagram
         int node_count = manager_after.get_node_count(diagram_after);
+        std::cout << "Number of nodes in diagram with new order (including terminal nodes): " << node_count << std::endl;
+        std::cout << "Order of variables in diagram with new order: " << std::endl;
+        std::vector<int> order = manager_after.get_order();
+        for (auto o : order) {
+            std::cout << o << " ";
+        }
+        std::cout << std::endl;
+
+        if (!generate_diagram(directory, file_name_without_extension, diagram_after, manager_after, i)) {
+            std::cout << "Couldn't generate diagram!!!" << std::endl;
+            return;
+        }
 
         //manager_after.force_gc();
         //manager_after.clear_cache();
@@ -137,7 +217,7 @@ void use_derivatives(double &sum_of_node_counts,
 }
 
 int main() {
-    std::string comparing_option = "ORIGINAL"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
+    std::string comparing_option = "DESCENDING_TD"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
     std::cout << comparing_option << std::endl;
     std::string directory = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD";
     std::string data_directory = directory + "\\TESTING\\";
@@ -155,6 +235,14 @@ int main() {
     std::string pla_path = "";
     std::optional<teddy::pla_file> pla_file;
     teddy::pla_file* pla = nullptr;
+
+    // delete all previously generated diagrams (if any)
+    for (const auto& entry : std::filesystem::directory_iterator(directory + "\\diagrams\\png_diag")) {
+        std::filesystem::remove_all(entry.path());
+    }
+    for (const auto& entry : std::filesystem::directory_iterator(directory + "\\diagrams\\dot_diag")) {
+        std::filesystem::remove_all(entry.path());
+    }
 
     do {
         if (std::string(find_file_data.cFileName) == "." || std::string(find_file_data.cFileName) == "..") {
@@ -191,7 +279,13 @@ int main() {
                 // save number of nodes of current diagram
                 int node_count = manager.get_node_count(diagram);
                 std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
-                
+                std::cout << "Order of variables in diagram: " << std::endl;
+                std::vector<int> order = manager.get_order();
+                for (auto o : order) {
+                    std::cout << o << " ";
+                }
+                std::cout << std::endl;
+
                 if (!generate_diagram(directory, file_name_without_extension, diagram, manager, i)) {
                     std::cout << "Couldn't generate diagram!!!" << std::endl;
                     return 1;
@@ -207,12 +301,12 @@ int main() {
             // manager.clear_cache();
         }
         else if (comparing_option == "DESCENDING_TD") {
-            use_derivatives(sum_of_node_counts, number_of_diagrams, number_of_functions, number_of_vars, manager, pla, false);
+            use_derivatives(directory, file_name_without_extension, sum_of_node_counts, number_of_diagrams, number_of_functions, number_of_vars, manager, pla, false);
             //manager.force_gc();
             //manager.clear_cache();
         }
         else if (comparing_option == "ASCENDING_TD") {
-            use_derivatives(sum_of_node_counts, number_of_diagrams, number_of_functions, number_of_vars, manager, pla, true);
+            use_derivatives(directory, file_name_without_extension, sum_of_node_counts, number_of_diagrams, number_of_functions, number_of_vars, manager, pla, true);
             //manager.force_gc();
             //manager.clear_cache();
         }
