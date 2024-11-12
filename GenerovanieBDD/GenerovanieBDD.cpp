@@ -41,8 +41,11 @@ bool convert_dot_file_to_png(std::string directory, std::string file_name, std::
     return system(command.c_str()) == 0;
 }
 
-bool generate_diagram(std::string directory, std::string file_name_without_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
+bool generate_diagram(std::string directory, std::string file_name_without_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function, bool use_replications, int rep) {
     std::string file_name = file_name_without_extension + "_diagram_" + std::to_string(which_function);
+    if (use_replications) {
+        file_name = file_name + "_rep_" + std::to_string(rep);
+    }
     // generate_dot_file() need to be returned for proper creating of dot file
     std::string dot_file_path = generate_dot_file(directory, file_name, diagram, manager);
     return convert_dot_file_to_png(directory, file_name, dot_file_path);
@@ -76,6 +79,7 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
         // DECREASE //
         //////////////
         // variables with dpbd_decrease == 1
+        /*
         std::vector<std::vector<int>> vars_with_ones_decrease = manager.satisfy_all<std::vector<int>>(1, dpbd_decrease);
         std::cout << "Number of ones in dpbd_decrease: " << number_of_ones_decrease << std::endl;
 
@@ -86,8 +90,9 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
             std::cout << " ";
         }
         std::cout << "" << std::endl;
-
+        */
         // variables with dpbd_decrease == 0
+        /*
         std::vector<std::vector<int>> vars_with_zeros_decrease = manager.satisfy_all<std::vector<int>>(0, dpbd_decrease);
         std::cout << "Number of zeros in dpbd_decrease: " << number_of_zeros_decrease << std::endl;
 
@@ -98,14 +103,14 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
             std::cout << " ";
         }
         std::cout << "" << std::endl;
-
+        */
         //////////////
         // INCREASE //
         //////////////
         // variables with dpbd_increase == 1
-        std::vector<std::vector<int>> vars_with_ones_increase = manager.satisfy_all<std::vector<int>>(1, dpbd_increase);
-        std::cout << "Number of ones in dpbd_increase: " << number_of_ones_increase << std::endl;
-
+        //std::vector<std::vector<int>> vars_with_ones_increase = manager.satisfy_all<std::vector<int>>(1, dpbd_increase);
+        //std::cout << "Number of ones in dpbd_increase: " << number_of_ones_increase << std::endl;
+        /*
         for (auto var : vars_with_ones_increase) {
             for (int i = 0; i < 3; ++i) {
                 std::cout << var[i];
@@ -113,11 +118,11 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
             std::cout << " ";
         }
         std::cout << "" << std::endl;
-
+        */
         // variables with dpbd_increase == 0
-        std::vector<std::vector<int>> vars_with_zeros_increase = manager.satisfy_all<std::vector<int>>(0, dpbd_increase);
-        std::cout << "Number of zeros in dpbd_increase: " << number_of_zeros_increase << std::endl;
-
+        //std::vector<std::vector<int>> vars_with_zeros_increase = manager.satisfy_all<std::vector<int>>(0, dpbd_increase);
+        //std::cout << "Number of zeros in dpbd_increase: " << number_of_zeros_increase << std::endl;
+        /*
         for (auto var : vars_with_zeros_increase) {
             for (int i = 0; i < 3; ++i) {
                 std::cout << var[i];
@@ -125,13 +130,14 @@ void get_td_of_all_vars_in_function(teddy::bss_manager& manager, std::vector<var
             std::cout << " ";
         }
         std::cout << "" << std::endl;
+        */
         ///////////////////////////////////////////////////////
 
         double td_for_decrease = (double)number_of_ones_decrease / (number_of_ones_decrease + number_of_zeros_decrease);
         double td_for_increase = (double)number_of_ones_increase / (number_of_ones_increase + number_of_zeros_increase);
 
         double true_density = td_for_decrease + td_for_increase;
-        std::cout << "True density for function " << std::to_string(which_diagram) << " is: " << std::to_string(true_density) << std::endl;
+        //std::cout << "True density for function " << std::to_string(which_diagram) << " is: " << std::to_string(true_density) << std::endl;
 
         var td_var;
         td_var.true_density = true_density;
@@ -160,12 +166,12 @@ void use_derivatives(std::string directory,
 
         // save all true densities of each variables in this function in list_for_reordering
         get_td_of_all_vars_in_function(manager, list_for_reordering, diagram, i);
-
+        /*
         std::cout << "Before sorting: " << std::endl;
         for (const auto& item : list_for_reordering) {
             std::cout << item.variable << " " << item.true_density << std::endl;
         }
-
+        */
         //delete &diagram;
 
         // sort list of structs based on true density
@@ -174,12 +180,12 @@ void use_derivatives(std::string directory,
         } else {
             std::sort(list_for_reordering.begin(), list_for_reordering.end(), compare_by_true_density_desc);
         }
-
+        /*
         std::cout << "After sorting: " << std::endl;
         for (const auto& item : list_for_reordering) {
             std::cout << item.variable << " " << item.true_density << std::endl;
         }
-        
+        */
         // vector with new order in teddy format 
         std::vector<teddy::int32> order_after = std::vector<teddy::int32>(number_of_vars);
 
@@ -195,6 +201,7 @@ void use_derivatives(std::string directory,
 
         // save number of nodes of current diagram
         int node_count = manager_after.get_node_count(diagram_after);
+        /*
         std::cout << "Number of nodes in diagram with new order (including terminal nodes): " << node_count << std::endl;
         std::cout << "Order of variables in diagram with new order: " << std::endl;
         std::vector<int> order = manager_after.get_order();
@@ -202,12 +209,13 @@ void use_derivatives(std::string directory,
             std::cout << o << " ";
         }
         std::cout << std::endl;
-
-        if (!generate_diagram(directory, file_name_without_extension, diagram_after, manager_after, i)) {
+        */
+        /*
+        if (!generate_diagram(directory, file_name_without_extension, diagram_after, manager_after, i, false, 0)) {
             std::cout << "Couldn't generate diagram!!!" << std::endl;
             return;
         }
-
+        */
         //manager_after.force_gc();
         //manager_after.clear_cache();
 
@@ -217,10 +225,15 @@ void use_derivatives(std::string directory,
 }
 
 int main() {
-    std::string comparing_option = "DESCENDING_TD"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
-    std::cout << comparing_option << std::endl;
     std::string directory = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD";
-    std::string data_directory = directory + "\\TESTING\\";
+    /////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////
+    int number_of_replications = 100;
+    std::string data_directory = directory + "\\FAST_WORKING_PLA\\";
+    std::string comparing_option = "DESCENDING_TD"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
+    /////////////////////////////////////////////////////////////////////////  
+    /////////////////////////////////////////////////////////////////////////   
+    std::cout << comparing_option << std::endl;
     WIN32_FIND_DATA find_file_data;
     HANDLE h_find = FindFirstFile((data_directory + "*").c_str(), &find_file_data);
 
@@ -278,6 +291,7 @@ int main() {
 
                 // save number of nodes of current diagram
                 int node_count = manager.get_node_count(diagram);
+                /*
                 std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
                 std::cout << "Order of variables in diagram: " << std::endl;
                 std::vector<int> order = manager.get_order();
@@ -285,12 +299,13 @@ int main() {
                     std::cout << o << " ";
                 }
                 std::cout << std::endl;
-
-                if (!generate_diagram(directory, file_name_without_extension, diagram, manager, i)) {
+                */
+                /*
+                if (!generate_diagram(directory, file_name_without_extension, diagram, manager, i, false, 0)) {
                     std::cout << "Couldn't generate diagram!!!" << std::endl;
                     return 1;
                 }
-
+                */
                 // delete &diagram;
                 
                 // update global statistics
@@ -311,60 +326,92 @@ int main() {
             //manager.clear_cache();
         }
         else if (comparing_option == "RANDOM") {
-            int number_of_replications = 100;
+            // Create a random engine
+            std::random_device rd;  // Obtain a random number from hardware
+            std::mt19937 eng(rd()); // Seed the generator
+            double sum_of_node_counts_in_this_file = 0.0;
+            double number_of_diagrams_in_this_file = 0.0;
             for (int r = 0; r < number_of_replications; ++r) {
-                // list of indexes of all variables of this function
-                std::vector<int> list_for_random_order = std::vector<int>(number_of_vars);
-
-                // populate list with indexes  
-                //  indexes of vector -> [0][1][2][3]
-                //          variables -> |0||1||2||3|    
-                // means that variable x0 is first in order, x1 is second and so on ...                   
-                for (int j = 0; j < number_of_vars; j++) {
-                    list_for_random_order[j] = j;
-                }
-
-                // Create a random engine
-                std::random_device rd;  // Obtain a random number from hardware
-                std::mt19937 eng(rd()); // Seed the generator
-
-                // Shuffle the vector
-                //  indexes of vector -> [0][1][2][3]
-                //          variables -> |1||3||0||2|    
-                // means that variable x0 is third in order, x1 is first and so on ...  
-                std::shuffle(list_for_random_order.begin(), list_for_random_order.end(), eng);
-
-                // vector with new order in teddy format 
-                std::vector<teddy::int32> random_order = std::vector<teddy::int32>(number_of_vars);
-
-                // moving randomly ordered list to teddy format vector
-                for (int i = 0; i < number_of_vars; ++i) {
-                    random_order[i] = list_for_random_order[i];
-                }
-
-                // creating manager with new random order of variables
-                teddy::bss_manager manager_after(number_of_vars, 100'000, random_order);
-                manager_after.set_auto_reorder(false);
-
+                //std::cout << "Replication " << std::to_string(r) << std::endl;
                 for (int i = 0; i < number_of_functions; ++i) {
+                    // list of indexes of all variables of this function
+                    std::vector<int> list_for_random_order = std::vector<int>(number_of_vars);
+
+                    // populate list with indexes  
+                    //  indexes of vector -> [0][1][2][3]
+                    //          variables -> |0||1||2||3|    
+                    // means that variable x0 is first in order, x1 is second and so on ...                   
+                    for (int j = 0; j < number_of_vars; j++) {
+                        list_for_random_order[j] = j;
+                    }
+                    /*
+                    std::cout << "Before random ordering:" << std::endl;
+                    for (int k = 0; k < number_of_vars; k++) {
+                        std::cout << std::to_string(list_for_random_order[k]) << " ";
+                    }
+                    std::cout << std::endl;
+                    */
+                    // Shuffle the vector
+                    //  indexes of vector -> [0][1][2][3]
+                    //          variables -> |1||3||0||2|    
+                    // means that variable x0 is third in order, x1 is first and so on ...  
+                    std::shuffle(list_for_random_order.begin(), list_for_random_order.end(), eng);
+                    /*
+                    std::cout << "After random ordering:" << std::endl;
+                    for (int k = 0; k < number_of_vars; k++) {
+                        std::cout << std::to_string(list_for_random_order[k]) << " ";
+                    }
+                    std::cout << std::endl;
+                    */
+                    // vector with new order in teddy format 
+                    std::vector<teddy::int32> random_order = std::vector<teddy::int32>(number_of_vars);
+
+                    // moving randomly ordered list to teddy format vector
+                    for (int i = 0; i < number_of_vars; ++i) {
+                        random_order[i] = list_for_random_order[i];
+                    }
+
+                    // creating manager with new random order of variables
+                    teddy::bss_manager manager_after(number_of_vars, 100'000, random_order);
+                    manager_after.set_auto_reorder(false);
+
                     // get i-th diagram from pla file 
                     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[i];
 
                     // save number of nodes of current diagram
                     int node_count = manager_after.get_node_count(diagram_after);
-
+                    /*
+                    std::cout << "Number of nodes in diagram with new random order (including terminal nodes): " << node_count << std::endl;
+                    std::cout << "Order of variables in diagram: " << std::endl;
+                    std::vector<int> order = manager_after.get_order();
+                    for (auto o : order) {
+                        std::cout << o << " ";
+                    }
+                    std::cout << std::endl;
+                    */
+                    /*
+                    if (!generate_diagram(directory, file_name_without_extension, diagram_after, manager_after, i, true, r)) {
+                        std::cout << "Couldn't generate diagram!!!" << std::endl;
+                        return 1;
+                    }
+                    */
                     //delete& diagram_after;
 
-                    // update global statistics
-                    sum_of_node_counts += node_count;
-                    number_of_diagrams += 1;
-                }
+                    // manager_after.force_gc();
+                    // manager_after.clear_cache();
 
-                manager_after.force_gc();
-                manager_after.clear_cache();
+                    // update global statistics
+                    sum_of_node_counts_in_this_file += node_count;
+                    number_of_diagrams_in_this_file += 1;
+                }
             }
-            sum_of_node_counts /= number_of_replications;
-            number_of_diagrams /= number_of_replications;
+            sum_of_node_counts_in_this_file /= number_of_replications;
+            number_of_diagrams_in_this_file /= number_of_replications;
+
+            sum_of_node_counts += sum_of_node_counts_in_this_file;
+            number_of_diagrams += number_of_diagrams_in_this_file;
+        } else {
+            std::cout << "Wrong option" << std::endl;
         }
     } while (FindNextFile(h_find, &find_file_data) != 0);
     
