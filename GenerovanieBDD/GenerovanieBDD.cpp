@@ -228,9 +228,9 @@ int main() {
     std::string directory = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD";
     ////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////
-    int number_of_replications = 100;
+    int number_of_replications = 10;
     std::string data_directory = directory + "\\FAST_WORKING_PLA\\";
-    std::string comparing_option = "DESCENDING_TD"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
+    std::string comparing_option = "RANDOM"; // ORIGINAL, ASCENDING_TD, DESCENDING_TD, RANDOM
     ////////////////////////////////////////////////////////////////////////  
     ////////////////////////////////////////////////////////////////////////   
     std::cout << comparing_option << std::endl;
@@ -329,8 +329,8 @@ int main() {
             // Create a random engine
             std::random_device rd;  // Obtain a random number from hardware
             std::mt19937 eng(rd()); // Seed the generator
-            double sum_of_node_counts_in_this_file = 0.0;
-            double number_of_diagrams_in_this_file = 0.0;
+            double sum_of_node_counts_in_this_file_for_all_rep = 0.0;
+            double number_of_diagrams_in_this_file_for_all_rep = 0.0;
             for (int r = 0; r < number_of_replications; ++r) {
                 //std::cout << "Replication " << std::to_string(r) << std::endl;
                 for (int i = 0; i < number_of_functions; ++i) {
@@ -401,12 +401,12 @@ int main() {
                     // manager_after.clear_cache();
 
                     // update global statistics
-                    sum_of_node_counts_in_this_file += node_count;
-                    number_of_diagrams_in_this_file += 1;
+                    sum_of_node_counts_in_this_file_for_all_rep += node_count;
+                    number_of_diagrams_in_this_file_for_all_rep += 1;
                 }
             }
-            sum_of_node_counts_in_this_file /= number_of_replications;
-            number_of_diagrams_in_this_file /= number_of_replications;
+            double sum_of_node_counts_in_this_file = sum_of_node_counts_in_this_file_for_all_rep /= number_of_replications;
+            double number_of_diagrams_in_this_file = number_of_diagrams_in_this_file_for_all_rep /= number_of_replications;
 
             sum_of_node_counts += sum_of_node_counts_in_this_file;
             number_of_diagrams += number_of_diagrams_in_this_file;
