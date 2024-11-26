@@ -20,6 +20,28 @@ struct var {
     double true_density;
 };
 
+// spytat sa ci sa da TD pre vseobecnu derivaciu vypocitat rychlejsie
+// objektovo prerobit aj UML-ko tried a vztahov a atributy tried
+// priemerny pocet nodov pre subor
+// priemerny pocet nodov pre funkciu
+// priemerny pocet nodov celkovo
+// skusit vsetky subory s vacsou RAM neskor
+// skusit aj preusporiadavaciu heuristiku
+// 4 experimenty aj so zapnutou heuristikou -> 8 experimentov
+// generovanie csv pre vacsi prehlad
+// pre kazdu funkciu len pocet nodov
+// priemer pre vsetky funkcie v subore, pripadne pre vsetky subory
+// dat na vyber:
+// a) pre kazde pla jedno csv
+// b) pre vsetky pla jedno csv -> riadok charakterizovany aj nazvom suboru
+// -> riadky == funkcie
+// -> stlpce: 
+// 1. stpec -> ktora funkcia
+// 2. stlpec -> pocet premennych
+// 3. ... n stlpec -> tych 8 merani -> pre kazde aj poradie premennych
+// v buducnosti usporiadanie pomocou entropie
+
+
 bool compare_by_true_density_desc(const var& a, const var& b) {
     return a.true_density > b.true_density;
 }
@@ -196,7 +218,7 @@ void use_derivatives(std::string directory,
 
         // creating manager with new order of variables based on true density
         teddy::bss_manager manager_after(number_of_vars, 100'000, order_after);
-        manager_after.set_auto_reorder(false);
+        manager_after.set_auto_reorder(false); // aj s variantou true
         teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[i];
 
         // save number of nodes of current diagram
@@ -277,7 +299,7 @@ int main() {
         teddy::bss_manager manager(number_of_vars, 100'000);
         
         // Disable automatic variable reordering.
-        manager.set_auto_reorder(false);
+        manager.set_auto_reorder(false); // aj s variantou true
 
         // get file name without extension
         std::filesystem::path file_path(find_file_data.cFileName);
@@ -373,7 +395,7 @@ int main() {
 
                     // creating manager with new random order of variables
                     teddy::bss_manager manager_after(number_of_vars, 100'000, random_order);
-                    manager_after.set_auto_reorder(false);
+                    manager_after.set_auto_reorder(false); // aj s variantou true
 
                     // get i-th diagram from pla file 
                     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[i];
