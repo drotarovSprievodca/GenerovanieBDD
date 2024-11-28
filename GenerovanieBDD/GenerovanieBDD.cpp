@@ -218,8 +218,11 @@ void use_derivatives(std::string directory,
 
         // creating manager with new order of variables based on true density
         teddy::bss_manager manager_after(number_of_vars, 100'000, order_after);
-        manager_after.set_auto_reorder(false); // aj s variantou true
+        manager_after.set_auto_reorder(false);
         teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[i];
+
+        // Runs the variable reordering heuristic.
+        //manager_after.force_reorder();
 
         // save number of nodes of current diagram
         int node_count = manager_after.get_node_count(diagram_after);
@@ -296,10 +299,11 @@ int main() {
         int number_of_functions = pla->get_function_count();
 
         // Creating manager with default order of variables
+        // Used only for calculating derivatives
         teddy::bss_manager manager(number_of_vars, 100'000);
         
         // Disable automatic variable reordering.
-        manager.set_auto_reorder(false); // aj s variantou true
+        manager.set_auto_reorder(false);
 
         // get file name without extension
         std::filesystem::path file_path(find_file_data.cFileName);
@@ -308,22 +312,31 @@ int main() {
         std::cout << "There is " << std::to_string(number_of_functions) << " functions with " << std::to_string(number_of_vars) << " variables in file: " + std::string(find_file_data.cFileName) << std::endl;
         if (comparing_option == "ORIGINAL") {
             for (int i = 0; i < number_of_functions; ++i) {
-                // get function from pla file
-                teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[i];
+                // creating manager with original order of variables
+                teddy::bss_manager manager_original(number_of_vars, 100'000);
+                manager_original.set_auto_reorder(false);
+
+                // get i-th diagram from pla file 
+                teddy::bss_manager::diagram_t diagram = manager_original.from_pla(*pla, teddy::fold_type::Tree)[i];
+
+                // Runs the variable reordering heuristic.
+                //manager_original.force_reorder();
 
                 // save number of nodes of current diagram
-                int node_count = manager.get_node_count(diagram);
+                int node_count = manager_original.get_node_count(diagram);
+
                 /*
                 std::cout << "Number of nodes in diagram (including terminal nodes): " << node_count << std::endl;
                 std::cout << "Order of variables in diagram: " << std::endl;
-                std::vector<int> order = manager.get_order();
+                std::vector<int> order = manager_original.get_order();
                 for (auto o : order) {
                     std::cout << o << " ";
                 }
                 std::cout << std::endl;
                 */
+
                 /*
-                if (!generate_diagram(directory, file_name_without_extension, diagram, manager, i, false, 0)) {
+                if (!generate_diagram(directory, file_name_without_extension, diagram, manager_original, i, false, 0)) {
                     std::cout << "Couldn't generate diagram!!!" << std::endl;
                     return 1;
                 }
@@ -350,12 +363,14 @@ int main() {
         else if (comparing_option == "RANDOM") {
             // Create a random engine
             std::random_device rd;  // Obtain a random number from hardware
-            std::mt19937 eng(rd()); // Seed the generator
+            std::mt19937 eng(1); // Seed the generator
             double sum_of_node_counts_in_this_file_for_all_rep = 0.0;
             double number_of_diagrams_in_this_file_for_all_rep = 0.0;
-            for (int r = 0; r < number_of_replications; ++r) {
-                //std::cout << "Replication " << std::to_string(r) << std::endl;
-                for (int i = 0; i < number_of_functions; ++i) {
+
+            for (int i = 0; i < number_of_functions; ++i) {
+                for (int r = 0; r < number_of_replications; ++r) {
+                
+                    //std::cout << "Replication " << std::to_string(r) << std::endl;
                     // list of indexes of all variables of this function
                     std::vector<int> list_for_random_order = std::vector<int>(number_of_vars);
 
@@ -395,10 +410,13 @@ int main() {
 
                     // creating manager with new random order of variables
                     teddy::bss_manager manager_after(number_of_vars, 100'000, random_order);
-                    manager_after.set_auto_reorder(false); // aj s variantou true
+                    manager_after.set_auto_reorder(false);
 
                     // get i-th diagram from pla file 
                     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[i];
+
+                    // Runs the variable reordering heuristic.
+                    //manager_after.force_reorder();
 
                     // save number of nodes of current diagram
                     int node_count = manager_after.get_node_count(diagram_after);
