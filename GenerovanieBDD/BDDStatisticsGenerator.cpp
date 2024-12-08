@@ -44,6 +44,14 @@ void BDDStatisticsGenerator::get_statistics() {
     std::optional<teddy::pla_file> pla_file;
     teddy::pla_file* pla = nullptr;
 
+    // prepare header
+    std::string header = "File,Function,Number of variables";
+    for (Strategy* s : this->strategies) {
+        header += "," + s->to_string();
+    }
+    header += "\n";
+    this->csv_output->set_header(header);
+
     // iterate through all pla files in data_directory for each strategy
     do {
         // skip . and .. in data_directory
@@ -76,21 +84,29 @@ void BDDStatisticsGenerator::get_statistics() {
         default_manager.set_auto_reorder(false);
 
         // prepare csv file for writing to
-        this->csv_output->set_for_write(file_name_without_extension);
+        this->csv_output->open_csv(file_name_without_extension);
 
         std::cout << "Processing " << std::to_string(number_of_functions) << " function(s) (each one with " << std::to_string(number_of_vars) << " variables) from file: " + std::string(find_file_data.cFileName) + " ..." << std::endl;
-        // iterate through all strategies for currently open pla file
-        for (Strategy* strategy : strategies) {
-            // iterate through all functions in currently open pla file
-            for (int i = 0; i < number_of_functions; ++i) {
+
+        for (int i = 0; i < number_of_functions; ++i) {
+            this->csv_output->write_info_about_function(this->find_file_data.cFileName, i + 1, number_of_vars);
+            for (Strategy* strategy : this->strategies) {
                 strategy->process_function(default_manager, number_of_vars, pla, this->csv_output, i);
             }
+            this->csv_output->new_line();
         }
 
-        // close csv file or keep open (depending on csv configuration)
-        this->csv_output->unset_for_write();
+        // close csv file if there is one csv per pla file
+        if (this->csv_output->get_csv_for_every_pla()) {
+            this->csv_output->close_csv();
+        }
 
     } while (FindNextFile(this->h_find, &this->find_file_data) != 0);
+
+    // close csv file if there is only one csv for all pla files
+    if (!this->csv_output->get_csv_for_every_pla()) {
+        this->csv_output->close_csv();
+    }
 
     FindClose(this->h_find);
 }

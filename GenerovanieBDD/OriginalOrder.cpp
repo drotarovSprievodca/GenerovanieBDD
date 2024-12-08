@@ -6,7 +6,7 @@ OriginalOrder::OriginalOrder(bool use_var_reordering_heuristics) :
 
 OriginalOrder::~OriginalOrder() {}
 
-double OriginalOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
+void OriginalOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
     // creating manager with original order of variables
     teddy::bss_manager manager(number_of_vars, 100'000);
     manager.set_auto_reorder(false);
@@ -19,13 +19,21 @@ double OriginalOrder::process_function(teddy::bss_manager& default_manager, int 
         manager.force_reorder();
     }
 
-    // return number of nodes of current diagram
-    return (double)manager.get_node_count(diagram);
+    std::string var_order = "";
+    std::vector<int> order = manager.get_order();
+    for (auto o : order) {
+        var_order += "v";
+        var_order += std::to_string(o);
+    }
+    csv->write_new_stats(var_order, (double)manager.get_node_count(diagram));
 }
 
 std::string OriginalOrder::to_string() {
-    std::string return_string = "Original order with";
-    return_string += !this->use_var_reordering_heuristics ? "out" : "";
-    return_string += " reordering heuristics";
+    std::string return_string = "Original w/";
+    return_string += this->use_var_reordering_heuristics ? "" : "o";
+    return_string += " RH order,";
+    return_string += "Original w/";
+    return_string += this->use_var_reordering_heuristics ? "" : "o";
+    return_string += " RH # of nodes";
     return return_string;
 }

@@ -112,7 +112,7 @@ void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& d
     }
 }
 
-double DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput *csv, int which_function) {
+void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput *csv, int which_function) {
     // get function from pla file
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
@@ -160,16 +160,26 @@ double DerivativesBasedOrder::process_function(teddy::bss_manager& default_manag
         manager_after.force_reorder();
     }
 
-    // return number of nodes of current diagram
-    return manager_after.get_node_count(diagram_after);
+    std::string var_order = "";
+    std::vector<int> order = manager_after.get_order();
+    for (auto o : order) {
+        var_order += "v";
+        var_order += std::to_string(o);
+    }
+    csv->write_new_stats(var_order, (double)manager_after.get_node_count(diagram_after));
 }
 
 std::string DerivativesBasedOrder::to_string() {
-    std::string return_string = "Order based on ";
-    return_string += this->ascending ? "ascending" : "descending";
-    return_string += " true density with";
-    return_string += this->use_var_reordering_heuristics ? "" : "out";
-    return_string += " reordering heuristics";
+    std::string return_string = "";
+    return_string += this->ascending ? "Ascending" : "Descending";
+    return_string += " TD w/";
+    return_string += this->use_var_reordering_heuristics ? "" : "o";
+    return_string += " RH order,";
+
+    return_string += this->ascending ? "Ascending" : "Descending";
+    return_string += " TD w/";
+    return_string += this->use_var_reordering_heuristics ? "" : "o";
+    return_string += " RH # of nodes";
 
     return return_string;
 }
