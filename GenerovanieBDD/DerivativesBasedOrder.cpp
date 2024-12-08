@@ -112,7 +112,7 @@ void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& d
     }
 }
 
-double DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, int which_function) {
+double DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput *csv, int which_function) {
     // get function from pla file
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 

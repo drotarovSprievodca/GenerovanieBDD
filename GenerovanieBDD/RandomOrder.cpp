@@ -10,7 +10,7 @@ RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_repli
 
 RandomOrder::~RandomOrder() {}
 
-double RandomOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, int which_function) {
+double RandomOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
     this->sum_of_node_counts_in_function_for_all_rep = 0.0;
     for (int r = 0; r < this->number_of_replications; ++r) {
         //std::cout << "Replication " << std::to_string(r) << std::endl;
