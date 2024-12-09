@@ -20,20 +20,19 @@ void OriginalOrder::process_function(teddy::bss_manager& default_manager, int nu
     }
 
     std::string var_order = "";
-    std::vector<int> order = manager.get_order();
-    for (auto o : order) {
-        var_order += "v";
-        var_order += std::to_string(o);
+    for (auto x : manager.get_order()) {
+        var_order += "x";
+        var_order += std::to_string(x);
     }
     csv->write_new_stats(var_order, (double)manager.get_node_count(diagram));
 }
 
 std::string OriginalOrder::to_string() {
-    std::string return_string = "Original w/";
-    return_string += this->use_var_reordering_heuristics ? "" : "o";
-    return_string += " RH order,";
-    return_string += "Original w/";
-    return_string += this->use_var_reordering_heuristics ? "" : "o";
-    return_string += " RH # of nodes";
+    std::string return_string = "Original w";
+    return_string += this->use_var_reordering_heuristics ? "" : "/o";
+    return_string += " RH (order);";
+    return_string += "Original w";
+    return_string += this->use_var_reordering_heuristics ? "" : "/o";
+    return_string += " RH (# of nodes)";
     return return_string;
 }

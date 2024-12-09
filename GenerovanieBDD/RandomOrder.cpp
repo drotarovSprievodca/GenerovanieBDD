@@ -69,8 +69,8 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
 }
 
 std::string RandomOrder::to_string() {
-    std::string return_string = "Random w/";
-    return_string += this->use_var_reordering_heuristics ? "" : "o";
-    return_string += " RH # of nodes";
+    std::string return_string = "Random w";
+    return_string += this->use_var_reordering_heuristics ? "" : "/o";
+    return_string += " RH (# of nodes)";
     return return_string;
 }

@@ -45,9 +45,9 @@ void BDDStatisticsGenerator::get_statistics() {
     teddy::pla_file* pla = nullptr;
 
     // prepare header
-    std::string header = "File,Function,Number of variables";
+    std::string header = "File;Function;Number of variables";
     for (Strategy* s : this->strategies) {
-        header += "," + s->to_string();
+        header += ";" + s->to_string();
     }
     header += "\n";
     this->csv_output->set_header(header);

@@ -73,14 +73,23 @@ bool CSVOutput::close_csv() {
 }
 
 void CSVOutput::write_info_about_function(std::string file_name, int which_function, int number_of_vars) {
-	this->csv_file_stream << file_name << "," << "f" << std::to_string(which_function) << "," << std::to_string(number_of_vars);
+	this->csv_file_stream << file_name << ";" << "f" << std::to_string(which_function) << ";" << std::to_string(number_of_vars);
 }
 
 void CSVOutput::write_new_stats(std::string order, double node_count) {
 	if (order != "") {
-		this->csv_file_stream << "," << order;
+		this->csv_file_stream << ";" << order;
 	}
-	this->csv_file_stream << "," << std::to_string(node_count);
+
+	std::ostringstream oss;
+	oss << std::fixed << std::setprecision(2) << node_count;
+	std::string two_dec_places_precise_number = oss.str();
+	for (char& c : two_dec_places_precise_number) {
+		if (c == '.') {
+			c = ',';
+		}
+	}
+	this->csv_file_stream << ";" << two_dec_places_precise_number;
 }
 
 void CSVOutput::new_line() {

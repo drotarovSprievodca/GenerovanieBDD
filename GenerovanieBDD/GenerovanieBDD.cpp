@@ -34,7 +34,7 @@ int main() {
     int number_of_replications = 10;
     // true for one csv per pla file from pla_files_directory
     // false for one big csv from all files from pla_files_directory
-    bool csv_for_every_pla = true;
+    bool csv_for_every_pla = false;
     std::string csv_output_directory = "\\csv_output\\";
     std::string pla_files_directory = "\\FAST_WORKING_PLA\\";
     

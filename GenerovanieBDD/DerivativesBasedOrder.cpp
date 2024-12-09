@@ -161,10 +161,9 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
     }
 
     std::string var_order = "";
-    std::vector<int> order = manager_after.get_order();
-    for (auto o : order) {
-        var_order += "v";
-        var_order += std::to_string(o);
+    for (auto x : manager_after.get_order()) {
+        var_order += "x";
+        var_order += std::to_string(x);
     }
     csv->write_new_stats(var_order, (double)manager_after.get_node_count(diagram_after));
 }
@@ -172,14 +171,14 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
 std::string DerivativesBasedOrder::to_string() {
     std::string return_string = "";
     return_string += this->ascending ? "Ascending" : "Descending";
-    return_string += " TD w/";
-    return_string += this->use_var_reordering_heuristics ? "" : "o";
-    return_string += " RH order,";
+    return_string += " TD w";
+    return_string += this->use_var_reordering_heuristics ? "" : "/o";
+    return_string += " RH (order);";
 
     return_string += this->ascending ? "Ascending" : "Descending";
-    return_string += " TD w/";
-    return_string += this->use_var_reordering_heuristics ? "" : "o";
-    return_string += " RH # of nodes";
+    return_string += " TD w";
+    return_string += this->use_var_reordering_heuristics ? "" : "/o";
+    return_string += " RH (# of nodes)";
 
     return return_string;
 }
