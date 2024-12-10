@@ -15,6 +15,7 @@ class CSVOutput {
 		std::string header;
 	public: 
 		CSVOutput(std::string working_directory, std::string csv_output_directory, bool csv_for_every_pla);
+		~CSVOutput();
 		void set_csv_for_every_pla(bool csv_for_every_pla);
 		bool get_csv_for_every_pla();
 		bool open_csv(std::string pla_file_name);

@@ -12,7 +12,7 @@
 
 class BDDStatisticsGenerator {
 	public:
-		BDDStatisticsGenerator(std::string working_directory, std::string pla_files_directory, CSVOutput *csv_output);
+		BDDStatisticsGenerator(std::string working_directory, std::string pla_files_directory, std::string csv_output_directory, bool csv_for_every_pla);
 		~BDDStatisticsGenerator();
 		void set_strategy(std::vector<Strategy*> strategies);
 		void add_strategy(Strategy* strategy);
@@ -20,7 +20,6 @@ class BDDStatisticsGenerator {
 		void print_strategies();
 		void get_statistics();
 	private:
-		bool csv_for_every_pla = true;
 		std::string working_directory;
 		std::string data_directory;  // absolute path to directory with all pla files
 		WIN32_FIND_DATA find_file_data;  // structure that contains information about data_directory

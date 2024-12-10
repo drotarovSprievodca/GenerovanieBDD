@@ -1,7 +1,7 @@
 #include "BDDStatisticsGenerator.hpp"
 
-BDDStatisticsGenerator::BDDStatisticsGenerator(std::string working_directory, std::string pla_files_directory, CSVOutput *csv_output) {
-    this->csv_output = csv_output;
+BDDStatisticsGenerator::BDDStatisticsGenerator(std::string working_directory, std::string pla_files_directory, std::string csv_output_directory, bool csv_for_every_pla) {
+    this->csv_output = new CSVOutput(working_directory, csv_output_directory, csv_for_every_pla);
     this->strategies = std::vector<Strategy*>();
     this->working_directory = working_directory;
     this->data_directory = this->working_directory + pla_files_directory;
@@ -11,6 +11,7 @@ BDDStatisticsGenerator::~BDDStatisticsGenerator() {
     for (Strategy* s : this->strategies) {
         delete s;
     }
+    delete this->csv_output;
 }
 
 void BDDStatisticsGenerator::set_strategy(std::vector<Strategy*> strategies) {

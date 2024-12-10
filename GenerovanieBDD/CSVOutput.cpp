@@ -10,6 +10,12 @@ CSVOutput::CSVOutput(std::string working_directory, std::string csv_output_direc
 	}
 }
 
+CSVOutput::~CSVOutput() {
+	if (this->csv_file_stream.is_open()) {
+		this->csv_file_stream.close();
+	}
+}
+
 void CSVOutput::set_csv_for_every_pla(bool csv_for_every_pla) {
 	this->csv_for_every_pla = csv_for_every_pla;
 	if (!this->csv_for_every_pla) {

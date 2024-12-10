@@ -38,8 +38,7 @@ int main() {
     std::string csv_output_directory = "\\csv_output\\";
     std::string pla_files_directory = "\\FAST_WORKING_PLA\\";
     
-    CSVOutput *csv_output = new CSVOutput(working_directory, csv_output_directory, csv_for_every_pla);
-    BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output);
+    BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output_directory, csv_for_every_pla);
     bddStatisticsGenerator->set_strategy({  
                                             new OriginalOrder(false),
                                             new OriginalOrder(true),
