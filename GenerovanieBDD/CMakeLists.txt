@@ -7,7 +7,7 @@ find_package(
 
 add_executable(
     GenerovanieBDD "GenerovanieBDD.cpp"
- "BDDStatisticsGenerator.hpp" "BDDStatisticsGenerator.cpp" "Strategy.hpp"  "DerivativesBasedOrder.hpp" "DerivativesBasedOrder.cpp" "OriginalOrder.hpp" "OriginalOrder.cpp" "RandomOrder.hpp" "RandomOrder.cpp" "CSVOutput.hpp" "CSVOutput.cpp")
+ "BDDStatisticsGenerator.hpp" "BDDStatisticsGenerator.cpp" "Strategy.hpp" "DerivativesBasedOrder.hpp" "DerivativesBasedOrder.cpp" "OriginalOrder.hpp" "OriginalOrder.cpp" "RandomOrder.hpp" "RandomOrder.cpp" "CSVOutput.hpp" "CSVOutput.cpp" "EntropyBasedOrder.hpp" "EntropyBasedOrder.cpp")
 
 target_link_libraries(
     GenerovanieBDD PRIVATE teddy::teddy

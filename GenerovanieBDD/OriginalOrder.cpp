@@ -13,6 +13,19 @@ void OriginalOrder::process_function(teddy::bss_manager& default_manager, int nu
 
     // get n-th diagram from pla file 
     teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
+    
+    
+    //long long sc = manager.satisfy_count(1, diagram);
+
+    /*
+    std::vector<std::array<int, 7>> sa = manager.satisfy_all<std::array<int, 7>>(1, diagram);
+    for (auto a : sa) {
+        for (auto b : a) {
+            std::cout << b << " ";
+        }
+        std::cout << std::endl;
+    }
+    */
 
     if (this->use_var_reordering_heuristics) {
         // Runs the variable reordering heuristic

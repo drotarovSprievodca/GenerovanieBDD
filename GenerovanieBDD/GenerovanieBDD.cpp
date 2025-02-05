@@ -29,6 +29,30 @@
 // 3. ... n stlpec -> tych 8 merani -> pre kazde aj poradie premennych
 // v buducnosti usporiadanie pomocou entropie
 
+
+
+// rastuca a klesajuca entropia
+// spolocna (vzajomna) informacia medzi premmennou a funkciou
+// ako mi klesne entropia na funckii ak budem poznat konkretnu prememnu
+// 
+// 1. podobne der
+// H(f) za podmienky ze som poznal hodnotu iba jednej premennej (a)
+// H(f) za podmienky ze som poznal hodnotu iba jednej premennej (b)
+// len o tom co dam do jeho korena
+// 
+// 2.
+// H(f) za predpokladu ze poznam hodnoty viacerych premennych (pri b poznam uz a)
+// na kazdej urovni sa pomocou tej istej premennej usporiaduvalo
+// pomocou entropie sa urcovalo ako sa usporiadaju premenne na kazdej urovni
+// od najvacsej a od najmensej
+// ID3, C45
+// usporiadany rozhodovaci strom
+// ODT
+//
+// a experimenty
+// stale teddy kniznicu na budovanie
+
+
 int main() {
     std::string working_directory = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD";
     int number_of_replications = 10;
@@ -36,18 +60,20 @@ int main() {
     // false for one big csv from all files from pla_files_directory
     bool csv_for_every_pla = false;
     std::string csv_output_directory = "\\csv_output\\";
-    std::string pla_files_directory = "\\FAST_WORKING_PLA\\";
+    std::string pla_files_directory = "\\TESTING\\";
     
     BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output_directory, csv_for_every_pla);
-    bddStatisticsGenerator->set_strategy({  
-                                            new OriginalOrder(false),
-                                            new OriginalOrder(true),
+    bddStatisticsGenerator->set_strategy({ 
+                                            new EntropyBasedOrder(false)
+                                            /*new OriginalOrder(true),
                                             new DerivativesBasedOrder(false, true),
                                             new DerivativesBasedOrder(true, true),
                                             new DerivativesBasedOrder(false, false),
                                             new DerivativesBasedOrder(true, false), 
                                             new RandomOrder(false, number_of_replications),
-                                            new RandomOrder(true, number_of_replications) 
+                                            new RandomOrder(true, number_of_replications),
+                                            new EntropyBasedOrder(false),
+                                            new EntropyBasedOrder(true)*/
                                         });
     bddStatisticsGenerator->get_statistics();
     delete bddStatisticsGenerator;

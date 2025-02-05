@@ -9,6 +9,7 @@
 #include "OriginalOrder.hpp"
 #include "RandomOrder.hpp"
 #include "DerivativesBasedOrder.hpp"
+#include "EntropyBasedOrder.hpp"
 
 class BDDStatisticsGenerator {
 	public:

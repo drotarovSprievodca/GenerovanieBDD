@@ -8,15 +8,15 @@ DerivativesBasedOrder::DerivativesBasedOrder(bool use_var_reordering_heuristics,
 
 DerivativesBasedOrder::~DerivativesBasedOrder() {}
 
-bool compare_by_true_density_desc(const var& a, const var& b) {
+bool compare_by_true_density_desc(const td_var& a, const td_var& b) {
     return a.true_density > b.true_density;
 }
 
-bool compare_by_true_density_asc(const var& a, const var& b) {
+bool compare_by_true_density_asc(const td_var& a, const td_var& b) {
     return a.true_density < b.true_density;
 }
 
-void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& default_manager, std::vector<var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
+void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& default_manager, std::vector<td_var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     for (int i = 0; i < list_for_reordering.size(); ++i) {
         // variable xi increases from 0 -> 1 while function decreases from 1 -> 0
         teddy::bss_manager::diagram_t dpbd_increase = default_manager.dpld({ i, 0, 1 }, teddy::dpld::type_1_decrease(1), diagram);
@@ -104,11 +104,11 @@ void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& d
         double true_density = td_for_decrease + td_for_increase;
         //std::cout << "True density for function " << std::to_string(which_diagram) << " is: " << std::to_string(true_density) << std::endl;
 
-        var td_var = var();
-        td_var.true_density = true_density;
-        td_var.variable = i;
+        td_var var = td_var();
+        var.true_density = true_density;
+        var.variable = i;
 
-        list_for_reordering[i] = td_var;
+        list_for_reordering[i] = var;
     }
 }
 
@@ -117,7 +117,7 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
     // list for true densities of all variables of this function
-    std::vector<var> list_for_reordering = std::vector<var>(number_of_vars);
+    std::vector<td_var> list_for_reordering = std::vector<td_var>(number_of_vars);
 
     // save all true densities of all variables in this function in list_for_reordering
     get_td_of_all_vars_in_function(default_manager, list_for_reordering, diagram, which_function);
