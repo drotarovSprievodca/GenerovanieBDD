@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Strategy.hpp"
+#include <cmath>
 
 struct ce_var {
     int variable;

@@ -9,18 +9,115 @@ bool compare_by_conditional_entropy_asc(const ce_var& a, const ce_var& b) {
     return a.conditional_entropy < b.conditional_entropy;
 }
 
+static double log_2(double value) {
+    const double epsilon = 1e-9;
+
+    if (std::fabs(value) < epsilon) {
+        return 0.0;
+    }
+    else {
+        return log2(value);
+    }
+}
+
 void EntropyBasedOrder::get_ce_of_all_vars_in_function(teddy::bss_manager& default_manager, std::vector<ce_var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     for (int i = 0; i < list_for_reordering.size(); ++i) {
 
-        //default_manager;
+        long long number_of_ones_in_function = default_manager.satisfy_count(1, diagram);
+        long long number_of_zeros_in_function = default_manager.satisfy_count(0, diagram);
 
-        //diagram;
+        bool save_ones = true; // if variables whose function value is 1 or 0 should be saved
+        if (number_of_zeros_in_function < number_of_ones_in_function) {
+            save_ones = false;
+        }
 
-        double conditional_entropy = 0.0;
-        //std::cout << "Conditional entropy for function " << std::to_string(which_diagram) << " is: " << std::to_string(conditional_entropy) << std::endl;
+        int number_of_vars = default_manager.get_var_count();
+        
+        std::vector<std::vector<bool>> variables_of_function = default_manager.satisfy_all<std::vector<bool>>(save_ones ? 1 : 0, diagram);
+        
+        double P_that_var_is_one_or_zero = 1.0 / 2.0;
+        
+        /*
+        for (std::vector<bool> variables_of_one_case : variables_of_function) {
+            for (bool variable : variables_of_one_case) {
+                std::cout << variable << " ";
+            }
+            std::cout << std::endl;
+        }
+        */
+
+        // number of ones in i-th variable column of full truth table of function 
+        // but only where function evaluates to 1 if <save_ones> is true or to 0 if <save_ones> is false
+        long long number_of_ones = 0;
+
+        for (std::vector<bool> variables_of_one_case : variables_of_function) {
+            if (variables_of_one_case[i]) {
+                number_of_ones++;
+            }
+        }
+
+        // number of zeros in i-th variable column of full truth table of function 
+        // but only where function evaluates to 1 if <save_ones> is true or to 0 if <save_ones> is false
+        long long number_of_zeros = variables_of_function.size() - number_of_ones;
+
+        // number of ones or zeros in variable column of full truth table of function
+        long long sum_of_var = std::pow(2, number_of_vars) / 2;
+
+        // Conditional probability that function has value 1 or 0 given the condition that variable value is 1 or 0 
+        double P_f_0_xi_0 = 0.0;
+        double P_f_1_xi_0 = 0.0;
+        double P_f_0_xi_1 = 0.0;
+        double P_f_1_xi_1 = 0.0;
+
+        // save_ones is true
+
+        if (save_ones) {
+            // probability that function is 1 given that xi is 1
+            P_f_1_xi_1 = (double)number_of_ones / sum_of_var;
+
+            // probability that function is 0 given that xi is 1
+            //         = (sum_of_var - number_of_ones) / sum_of_var
+            P_f_0_xi_1 = 1.0 - P_f_1_xi_1;
+
+            // probability that function is 1 given that xi is 0
+            P_f_1_xi_0 = (double)number_of_zeros / sum_of_var;
+
+            // probability that function is 0 given that xi is 0
+            //         = (sum_of_var - number_of_zeros) / sum_of_var
+            P_f_0_xi_0 = 1.0 - P_f_1_xi_0;
+        } else {
+            // probability that function is 0 given that xi is 1
+            P_f_0_xi_1 = (double)number_of_ones / sum_of_var;
+
+            // probability that function is 1 given that xi is 1
+            //         = (sum_of_var - number_of_ones) / sum_of_var
+            P_f_1_xi_1 = 1.0 - P_f_0_xi_1;
+
+            // probability that function is 0 given that xi is 0
+            P_f_0_xi_0 = (double)number_of_zeros / sum_of_var;
+
+            // probability that function is 1 given that xi is 0
+            //         = (sum_of_var - number_of_zeros) / sum_of_var
+            P_f_1_xi_0 = 1.0 - P_f_0_xi_0;
+        }
+
+        /*
+        std::cout << "x" << std::to_string(i) << std::endl;
+        std::cout << std::to_string(P_f_0_xi_0) << std::endl;
+        std::cout << std::to_string(P_f_1_xi_0) << std::endl;
+        std::cout << std::to_string(P_f_0_xi_1) << std::endl;
+        std::cout << std::to_string(P_f_1_xi_1) << std::endl;
+        */
+
+        double H_f_xi_0 = - 1.0 * (P_f_0_xi_0 * log_2(P_f_0_xi_0) + P_f_1_xi_0 * log_2(P_f_1_xi_0));
+        double H_f_xi_1 = - 1.0 * (P_f_0_xi_1 * log_2(P_f_0_xi_1) + P_f_1_xi_1 * log_2(P_f_1_xi_1));
+
+        double H_f_xi = P_that_var_is_one_or_zero * H_f_xi_0 + P_that_var_is_one_or_zero * H_f_xi_1;
+
+        //std::cout << "H(f" << std::to_string(which_diagram) << "|x" << std::to_string(i) <<  ") = " << std::to_string(H_f_xi) << std::endl;
 
         ce_var var = ce_var();
-        var.conditional_entropy = conditional_entropy;
+        var.conditional_entropy = H_f_xi;
         var.variable = i;
 
         list_for_reordering[i] = var;
