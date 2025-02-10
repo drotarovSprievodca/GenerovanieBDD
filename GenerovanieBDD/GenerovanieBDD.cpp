@@ -60,7 +60,7 @@ int main() {
     // false for one big csv from all files from pla_files_directory
     bool csv_for_every_pla = false;
     std::string csv_output_directory = "\\csv_output\\";
-    std::string pla_files_directory = "\\TESTING\\";
+    std::string pla_files_directory = "\\FAST_WORKING_PLA\\";
     
     BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output_directory, csv_for_every_pla);
     bddStatisticsGenerator->set_strategy({
