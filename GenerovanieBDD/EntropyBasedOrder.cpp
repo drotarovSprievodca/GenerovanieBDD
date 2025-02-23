@@ -5,7 +5,7 @@ EntropyBasedOrder::EntropyBasedOrder(bool use_var_reordering_heuristics) :
 
 EntropyBasedOrder::~EntropyBasedOrder() {}
 
-bool compare_by_conditional_entropy_asc(const ce_var& a, const ce_var& b) {
+bool EntropyBasedOrder::compare_by_conditional_entropy_asc(const ce_var& a, const ce_var& b) {
     return a.conditional_entropy < b.conditional_entropy;
 }
 
@@ -142,7 +142,8 @@ void EntropyBasedOrder::process_function(teddy::bss_manager& default_manager, in
     //delete &diagram;
 
     // sort list of structs based on conditional entropy
-    std::sort(list_for_reordering.begin(), list_for_reordering.end(), compare_by_conditional_entropy_asc);
+    std::sort(list_for_reordering.begin(), list_for_reordering.end(), 
+        [this](const ce_var& a, const ce_var& b) { return this->compare_by_conditional_entropy_asc(a, b); });
     /*
     std::cout << "After sorting: " << std::endl;
     for (const auto& item : list_for_reordering) {
