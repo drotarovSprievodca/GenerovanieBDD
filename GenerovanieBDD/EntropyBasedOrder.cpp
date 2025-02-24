@@ -9,7 +9,7 @@ bool EntropyBasedOrder::compare_by_conditional_entropy_asc(const ce_var& a, cons
     return a.conditional_entropy < b.conditional_entropy;
 }
 
-static double log_2(double value) {
+double EntropyBasedOrder::log_2(double value) {
     const double epsilon = 1e-9;
 
     if (std::fabs(value) < epsilon) {

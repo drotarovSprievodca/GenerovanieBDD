@@ -8,6 +8,7 @@ EntropyBasedOrderDT::~EntropyBasedOrderDT() {}
 void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager, std::vector<int>& order_of_vars_from_ODT, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     int root = order_of_vars_from_ODT[0]; // root was calculated from layer 0
     int number_of_vars = default_manager.get_var_count();
+    long long number_of_lines = std::pow(2, number_of_vars);
     std::vector<std::vector<bool>> variables_of_function = default_manager.satisfy_all<std::vector<bool>>(1, diagram);
 
     // candidates for being a new members of final order (order_of_vars_from_ODT) that is output of this function 
@@ -23,6 +24,7 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
     
     for (int layer = 1; layer < number_of_vars - 1; layer++) {
         int number_of_max_occurences = std::pow(2, number_of_vars - (known_vars.size() + 1));
+        std::vector<ce_var> entropies_in_layer = std::vector<ce_var>(number_of_vars - layer);
         for (int H = 0; H < number_of_vars - layer; H++) {
             // Calculating: H(f|x_<candidate>,x_<known_vars[0]>,x_<known_vars[1]>,...) saved in variable: H_f_c_kv
             double H_f_c_kv = 0.0;
@@ -30,11 +32,9 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
             // example of partial entropy: H(f,x3,x2=0,x0=1) 
             int number_of_partial_entropies = std::pow(2, known_vars.size());
 
+            double partial_entropies = 0.0;
             // constant_in_partial_entropy in example: H(f,x3,x2=0,x0=1) is: 01
             for (int constant_in_partial_entropy = 0; constant_in_partial_entropy < number_of_partial_entropies; constant_in_partial_entropy++) {
-                
-                double partial_entropy = 0.0;
-                
                 int number_of_known_vars = known_vars.size();
                 std::vector<bool> constant_in_binary = std::vector<bool>(number_of_known_vars, false);
                 
@@ -51,74 +51,71 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
                         if (candidate_value != variables_of_one_case[candidate_var]) {
                             continue;
                         }
+                        bool all_constant_matched = true;
                         for (int index_to_known_var = 0; index_to_known_var < number_of_known_vars; index_to_known_var++) {
                             if (constant_in_binary[index_to_known_var] != variables_of_one_case[known_vars[index_to_known_var]]) {
-                                continue;
+                                all_constant_matched = false;
+                                break;
                             }
                         }
-                        number_of_matches++;
+                        if (all_constant_matched) {
+                            number_of_matches++;
+                        }
                     }
+                    // probability that function is 1, c = 0, constant(s)
+                    double P_f_1_c = (double)number_of_matches / number_of_lines;
+                    //std::cout << "P_f_1_c: " << std::to_string(P_f_1_c) << std::endl;
+                    partial_entropies += P_f_1_c * log_2(P_f_1_c);
+                    //std::cout << std::to_string(partial_entropies) << std::endl;
 
-                    // partial_entropy += (number_of_matches / number_of_max_occurences)* log toho;
-                    // partial_entropy += ((number_of_max_occurences - number_of_matches) / number_of_max_occurences)* log toho;
-                    //partial_entropy s minusom potom
+                    // probability that function is 1, c = 1, constant(s)
+                    double P_f_0_c = (double)(number_of_max_occurences - number_of_matches) / number_of_lines;
+                    //std::cout << "P_f_0_c: " << std::to_string(P_f_1_c) << std::endl;
+                    partial_entropies += P_f_0_c * log_2(P_f_0_c);
+                    //std::cout << std::to_string(partial_entropies) << std::endl;
 
                     candidate_value = true;
                     number_of_matches = 0; 
                 }
-                H_f_c_kv += partial_entropy;
-
-                
-
-
             }
+            partial_entropies = -1.0 * partial_entropies;
+            H_f_c_kv = partial_entropies - (known_vars.size() + 1);
 
-            //add H_f_c_kv to list for comparing in this layer
+            ce_var var = ce_var();
+            var.conditional_entropy = H_f_c_kv;
+            var.variable = candidate_var;
 
+            std::string constants = "";
+            for (int kv : known_vars) {
+                constants += ",x" + std::to_string(kv);
+            }
+            std::cout << "H(f" << std::to_string(which_diagram) << "|x" << std::to_string(candidate_var) << constants << ") = " << std::to_string(H_f_c_kv) << std::endl;
 
-
-        
+            entropies_in_layer[H] = var;
         }
-        // find best next var from list for comparing in this layer
-        // add to new order
-        // add to known_vars
-        // remove from unused_var
 
+        // sort list of structs based on conditional entropy
+        std::sort(entropies_in_layer.begin(), entropies_in_layer.end(),
+            [this](const ce_var& a, const ce_var& b) { return this->compare_by_conditional_entropy_asc(a, b); });
+
+        // new variable is added to order
+        ce_var winner = entropies_in_layer[0];
+        int new_var_in_final_order = winner.variable;
+        order_of_vars_from_ODT[layer] = new_var_in_final_order;
+
+        known_vars.push_back(new_var_in_final_order);
+
+        int index_of_unused_variable = 0;
+        for (int index_of_unused_var = 0; index_of_unused_var < unused_vars.size(); index_of_unused_var++) {
+            if (unused_vars[index_of_unused_var] == new_var_in_final_order) {
+                index_of_unused_variable = index_of_unused_var;
+            }
+        }
+
+        unused_vars.erase(unused_vars.begin() + index_of_unused_variable);
     }
-    //we have new order
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-    for (int i = 0; i < default_manager.get_var_count(); i++) {
-        order_of_vars_from_ODT[i] = i;
-    }
+    order_of_vars_from_ODT[number_of_vars - 1] = unused_vars[0];
 }
 
 void EntropyBasedOrderDT::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
