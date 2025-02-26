@@ -64,22 +64,24 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
                     }
                     // probability that function is 1, c = 0, constant(s)
                     double P_f_1_c = (double)number_of_matches / number_of_lines;
-                    //std::cout << "P_f_1_c: " << std::to_string(P_f_1_c) << std::endl;
+                    // std::cout << "P_f_1_c_" << (candidate_value ? "1" : "0") << ": " << std::to_string(number_of_matches) << " / " << std::to_string(number_of_lines) << std::endl;
                     partial_entropies += P_f_1_c * log_2(P_f_1_c);
-                    //std::cout << std::to_string(partial_entropies) << std::endl;
+                    
 
                     // probability that function is 1, c = 1, constant(s)
                     double P_f_0_c = (double)(number_of_max_occurences - number_of_matches) / number_of_lines;
-                    //std::cout << "P_f_0_c: " << std::to_string(P_f_1_c) << std::endl;
+                    // std::cout << "P_f_0_c_" << (candidate_value ? "1" : "0") << ": " << std::to_string(number_of_max_occurences - number_of_matches) << " / " << std::to_string(number_of_lines) << std::endl;
                     partial_entropies += P_f_0_c * log_2(P_f_0_c);
-                    //std::cout << std::to_string(partial_entropies) << std::endl;
+                    
 
                     candidate_value = true;
                     number_of_matches = 0; 
                 }
             }
             partial_entropies = -1.0 * partial_entropies;
-            H_f_c_kv = partial_entropies - (known_vars.size() + 1);
+
+            // for example: H(f|x3,x2,x0) = H(f,x3,x2,x0) - H(x3,x2,x0)
+            H_f_c_kv = partial_entropies - (known_vars.size() + 1); // for example: H(x3,x2,x0) = 3 because there are 3 variables
 
             ce_var var = ce_var();
             var.conditional_entropy = H_f_c_kv;
@@ -89,7 +91,7 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
             for (int kv : known_vars) {
                 constants += ",x" + std::to_string(kv);
             }
-            std::cout << "H(f" << std::to_string(which_diagram) << "|x" << std::to_string(candidate_var) << constants << ") = " << std::to_string(H_f_c_kv) << std::endl;
+            // std::cout << "H(f" << std::to_string(which_diagram) << "|x" << std::to_string(candidate_var) << constants << ") = " << std::to_string(H_f_c_kv) << std::endl;
 
             entropies_in_layer[H] = var;
         }
