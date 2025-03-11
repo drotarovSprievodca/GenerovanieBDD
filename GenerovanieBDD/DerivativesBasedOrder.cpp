@@ -18,91 +18,40 @@ bool compare_by_true_density_asc(const td_var& a, const td_var& b) {
 
 void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& default_manager, std::vector<td_var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     for (int i = 0; i < list_for_reordering.size(); ++i) {
-        // variable xi increases from 0 -> 1 while function decreases from 1 -> 0
-        teddy::bss_manager::diagram_t dpbd_increase = default_manager.dpld({ i, 0, 1 }, teddy::dpld::type_1_decrease(1), diagram);
-
-        // variable xi decreases from 1 -> 0 while function decreases from 1 -> 0
-        teddy::bss_manager::diagram_t dpbd_decrease = default_manager.dpld({ i, 1, 0 }, teddy::dpld::type_1_decrease(1), diagram);
-
-        // number of 1 in dpbd_decrease
-        int number_of_ones_decrease = default_manager.satisfy_all<std::vector<int>>(1, dpbd_decrease).size() / 2;
-
-        // number of 0 in dpbd_decrease
-        int number_of_zeros_decrease = default_manager.satisfy_all<std::vector<int>>(0, dpbd_decrease).size() / 2;
-
-        //delete &dpbd_decrease;
-
-        // number of 1 in dpbd_increase
-        int number_of_ones_increase = default_manager.satisfy_all<std::vector<int>>(1, dpbd_increase).size() / 2;
-
-        // number of 0 in dpbd_increase
-        int number_of_zeros_increase = default_manager.satisfy_all<std::vector<int>>(0, dpbd_increase).size() / 2;
-
-        //delete &dpbd_increase;
-
-        //////////////
-        // DECREASE //
-        //////////////
-        // variables with dpbd_decrease == 1
+        // variable xi increases from 0 -> 1 while function decreases from 1 -> 0 or increases from 0 -> 1
+        teddy::bss_manager::diagram_t dpbd_any_change = default_manager.dpld({ i, 0, 1 }, teddy::dpld::basic_undirectional(), diagram);
+        // number of ones in undirectional derivative
+        int number_of_ones_any_change = default_manager.satisfy_all<std::vector<int>>(1, dpbd_any_change).size() / 2;
+        // number of zeros in undirectional derivative
+        //int number_of_zeros_any_change = default_manager.satisfy_all<std::vector<int>>(0, dpbd_any_change).size() / 2;
+        
         /*
-        std::vector<std::vector<int>> vars_with_ones_decrease = default_manager.satisfy_all<std::vector<int>>(1, dpbd_decrease);
-        std::cout << "Number of ones in dpbd_decrease: " << number_of_ones_decrease << std::endl;
+        std::vector<std::vector<int>> vars_with_ones_any_change = default_manager.satisfy_all<std::vector<int>>(1, dpbd_any_change);
+        std::cout << "Number of ones in dpbd_any_change: " << number_of_ones_any_change << std::endl;
 
-        for (auto var : vars_with_ones_decrease) {
-            for (int i = 0; i < 3; ++i) {
+        for (auto var : vars_with_ones_any_change) {
+            for (int i = 0; i < var.size(); ++i) {
+                std::cout << var[i];
+            }
+            std::cout << " ";
+        }
+        std::cout << "" << std::endl;
+
+
+        std::vector<std::vector<int>> vars_with_zeros_any_change = default_manager.satisfy_all<std::vector<int>>(0, dpbd_any_change);
+        std::cout << "Number of zeros in dpbd_any_change: " << number_of_zeros_any_change << std::endl;
+
+        for (auto var : vars_with_zeros_any_change) {
+            for (int i = 0; i < var.size(); ++i) {
                 std::cout << var[i];
             }
             std::cout << " ";
         }
         std::cout << "" << std::endl;
         */
-        // variables with dpbd_decrease == 0
-        /*
-        std::vector<std::vector<int>> vars_with_zeros_decrease = default_manager.satisfy_all<std::vector<int>>(0, dpbd_decrease);
-        std::cout << "Number of zeros in dpbd_decrease: " << number_of_zeros_decrease << std::endl;
 
-        for (auto var : vars_with_zeros_decrease) {
-            for (int i = 0; i < 3; ++i) {
-                std::cout << var[i];
-            }
-            std::cout << " ";
-        }
-        std::cout << "" << std::endl;
-        */
-        //////////////
-        // INCREASE //
-        //////////////
-        // variables with dpbd_increase == 1
-        //std::vector<std::vector<int>> vars_with_ones_increase = default_manager.satisfy_all<std::vector<int>>(1, dpbd_increase);
-        //std::cout << "Number of ones in dpbd_increase: " << number_of_ones_increase << std::endl;
-        /*
-        for (auto var : vars_with_ones_increase) {
-            for (int i = 0; i < 3; ++i) {
-                std::cout << var[i];
-            }
-            std::cout << " ";
-        }
-        std::cout << "" << std::endl;
-        */
-        // variables with dpbd_increase == 0
-        //std::vector<std::vector<int>> vars_with_zeros_increase = default_manager.satisfy_all<std::vector<int>>(0, dpbd_increase);
-        //std::cout << "Number of zeros in dpbd_increase: " << number_of_zeros_increase << std::endl;
-        /*
-        for (auto var : vars_with_zeros_increase) {
-            for (int i = 0; i < 3; ++i) {
-                std::cout << var[i];
-            }
-            std::cout << " ";
-        }
-        std::cout << "" << std::endl;
-        */
-        ///////////////////////////////////////////////////////
-
-        double td_for_decrease = (double)number_of_ones_decrease / (number_of_ones_decrease + number_of_zeros_decrease);
-        double td_for_increase = (double)number_of_ones_increase / (number_of_ones_increase + number_of_zeros_increase);
-
-        double true_density = td_for_decrease + td_for_increase;
-        //std::cout << "True density for function " << std::to_string(which_diagram) << " is: " << std::to_string(true_density) << std::endl;
+        double true_density = (double)number_of_ones_any_change / (std::pow(2, default_manager.get_var_count()) / 2);
+        //std::cout << "True density for f" << std::to_string(which_diagram) << " and variable x" << std::to_string(i) << " is: " << std::to_string(true_density) << std::endl;
 
         td_var var = td_var();
         var.true_density = true_density;

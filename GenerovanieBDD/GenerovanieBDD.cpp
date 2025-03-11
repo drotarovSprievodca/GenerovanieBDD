@@ -63,19 +63,20 @@ int main() {
     std::string pla_files_directory = "\\FAST_WORKING_PLA\\";
     
     BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output_directory, csv_for_every_pla);
-    bddStatisticsGenerator->set_strategy({
+    bddStatisticsGenerator->set_strategy({/*
                                             new OriginalOrder(false),
                                             new OriginalOrder(true),
                                             new DerivativesBasedOrder(false, true),
-                                            new DerivativesBasedOrder(true, true),
+                                            new DerivativesBasedOrder(true, true),*/
                                             new DerivativesBasedOrder(false, false),
+                                            /*
                                             new DerivativesBasedOrder(true, false), 
                                             new RandomOrder(false, number_of_replications),
                                             new RandomOrder(true, number_of_replications),
                                             new EntropyBasedOrder(false),
                                             new EntropyBasedOrder(true),
                                             new EntropyBasedOrderDT(false),
-                                            new EntropyBasedOrderDT(true)
+                                            new EntropyBasedOrderDT(true)*/
                                         });
     bddStatisticsGenerator->get_statistics();
     delete bddStatisticsGenerator;
