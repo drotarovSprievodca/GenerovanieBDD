@@ -8,11 +8,11 @@ DerivativesBasedOrder::DerivativesBasedOrder(bool use_var_reordering_heuristics,
 
 DerivativesBasedOrder::~DerivativesBasedOrder() {}
 
-bool compare_by_true_density_desc(const td_var& a, const td_var& b) {
+bool DerivativesBasedOrder::compare_by_true_density_desc(const td_var& a, const td_var& b) {
     return a.true_density > b.true_density;
 }
 
-bool compare_by_true_density_asc(const td_var& a, const td_var& b) {
+bool DerivativesBasedOrder::compare_by_true_density_asc(const td_var& a, const td_var& b) {
     return a.true_density < b.true_density;
 }
 
@@ -76,15 +76,18 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
         std::cout << item.variable << " " << item.true_density << std::endl;
     }
     */
+
     //delete &diagram;
 
     // sort list of structs based on true density
     if (this->ascending) {
-        std::sort(list_for_reordering.begin(), list_for_reordering.end(), compare_by_true_density_asc);
+        std::sort(list_for_reordering.begin(), list_for_reordering.end(),
+            [this](const td_var& a, const td_var& b) { return this->compare_by_true_density_asc(a, b); });
+    } else {
+        std::sort(list_for_reordering.begin(), list_for_reordering.end(),
+            [this](const td_var& a, const td_var& b) { return this->compare_by_true_density_desc(a, b); });
     }
-    else {
-        std::sort(list_for_reordering.begin(), list_for_reordering.end(), compare_by_true_density_desc);
-    }
+
     /*
     std::cout << "After sorting: " << std::endl;
     for (const auto& item : list_for_reordering) {

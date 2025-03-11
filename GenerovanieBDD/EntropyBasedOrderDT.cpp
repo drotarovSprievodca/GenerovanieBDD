@@ -139,7 +139,7 @@ void EntropyBasedOrderDT::process_function(teddy::bss_manager& default_manager, 
 
     //delete &diagram;
 
-    // sort list of structs based on conditional entropy from ODT
+    // sort list of structs based on conditional entropy
     std::sort(list_for_reordering.begin(), list_for_reordering.end(),
         [this](const ce_var& a, const ce_var& b) { return this->compare_by_conditional_entropy_asc(a, b); });
     
