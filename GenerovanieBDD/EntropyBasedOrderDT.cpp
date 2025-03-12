@@ -8,12 +8,12 @@ EntropyBasedOrderDT::~EntropyBasedOrderDT() {}
 void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager, std::vector<int>& order_of_vars_from_ODT, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     int root = order_of_vars_from_ODT[0]; // root was calculated from layer 0
     int number_of_vars = default_manager.get_var_count();
-    long long number_of_lines = std::pow(2, number_of_vars);
+    int number_of_lines = std::pow(2, number_of_vars);
     std::vector<std::vector<bool>> variables_of_function = default_manager.satisfy_all<std::vector<bool>>(1, diagram);
 
     // candidates for being a new members of final order (order_of_vars_from_ODT) that is output of this function 
     std::vector<int> unused_vars = std::vector<int>();
-    for (int v = 0; v < number_of_vars; v++) {
+    for (int v = 0; v < number_of_vars; ++v) {
         if (v == root) { continue; }
         unused_vars.push_back(v);
     }
@@ -22,10 +22,10 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
     std::vector<int> known_vars = std::vector<int>();
     known_vars.push_back(root);
     
-    for (int layer = 1; layer < number_of_vars - 1; layer++) {
+    for (int layer = 1; layer < number_of_vars - 1; ++layer) {
         int number_of_max_occurences = std::pow(2, number_of_vars - (known_vars.size() + 1));
         std::vector<ce_var> entropies_in_layer = std::vector<ce_var>(number_of_vars - layer);
-        for (int H = 0; H < number_of_vars - layer; H++) {
+        for (int H = 0; H < number_of_vars - layer; ++H) {
             // Calculating: H(f|x_<candidate>,x_<known_vars[0]>,x_<known_vars[1]>,...) saved in variable: H_f_c_kv
             double H_f_c_kv = 0.0;
             int candidate_var = unused_vars[H];
@@ -34,7 +34,7 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
 
             double partial_entropies = 0.0;
             // constant_in_partial_entropy in example: H(f,x3,x2=0,x0=1) is: 01
-            for (int constant_in_partial_entropy = 0; constant_in_partial_entropy < number_of_partial_entropies; constant_in_partial_entropy++) {
+            for (int constant_in_partial_entropy = 0; constant_in_partial_entropy < number_of_partial_entropies; ++constant_in_partial_entropy) {
                 int number_of_known_vars = known_vars.size();
                 std::vector<bool> constant_in_binary = std::vector<bool>(number_of_known_vars, false);
                 
@@ -46,13 +46,13 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
                 bool candidate_value = false;
                 int number_of_matches = 0;
               
-                for (int c = 0; c < 2; c++) {
+                for (int c = 0; c < 2; ++c) {
                     for (std::vector<bool> variables_of_one_case : variables_of_function) {
                         if (candidate_value != variables_of_one_case[candidate_var]) {
                             continue;
                         }
                         bool all_constant_matched = true;
-                        for (int index_to_known_var = 0; index_to_known_var < number_of_known_vars; index_to_known_var++) {
+                        for (int index_to_known_var = 0; index_to_known_var < number_of_known_vars; ++index_to_known_var) {
                             if (constant_in_binary[index_to_known_var] != variables_of_one_case[known_vars[index_to_known_var]]) {
                                 all_constant_matched = false;
                                 break;
@@ -108,7 +108,7 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
         known_vars.push_back(new_var_in_final_order);
 
         int index_of_unused_variable = 0;
-        for (int index_of_unused_var = 0; index_of_unused_var < unused_vars.size(); index_of_unused_var++) {
+        for (int index_of_unused_var = 0; index_of_unused_var < unused_vars.size(); ++index_of_unused_var) {
             if (unused_vars[index_of_unused_var] == new_var_in_final_order) {
                 index_of_unused_variable = index_of_unused_var;
             }

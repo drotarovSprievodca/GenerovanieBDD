@@ -21,12 +21,12 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
         //  indexes of vector -> [0][1][2][3]
         //          variables -> |0||1||2||3|    
         // means that variable x0 is first in order, x1 is second and so on ...                   
-        for (int j = 0; j < number_of_vars; j++) {
+        for (int j = 0; j < number_of_vars; ++j) {
             list_for_random_order[j] = j;
         }
         /*
         std::cout << "Before random ordering:" << std::endl;
-        for (int k = 0; k < number_of_vars; k++) {
+        for (int k = 0; k < number_of_vars; ++k) {
             std::cout << std::to_string(list_for_random_order[k]) << " ";
         }
         std::cout << std::endl;
@@ -38,7 +38,7 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
         std::shuffle(list_for_random_order.begin(), list_for_random_order.end(), eng);
         /*
         std::cout << "After random ordering:" << std::endl;
-        for (int k = 0; k < number_of_vars; k++) {
+        for (int k = 0; k < number_of_vars; ++k) {
             std::cout << std::to_string(list_for_random_order[k]) << " ";
         }
         std::cout << std::endl;

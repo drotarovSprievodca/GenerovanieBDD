@@ -6,21 +6,57 @@ DerivativesBasedOrderDT::DerivativesBasedOrderDT(bool use_var_reordering_heurist
 DerivativesBasedOrderDT::~DerivativesBasedOrderDT() {}
 
 void DerivativesBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager, std::vector<int>& order_of_vars_from_ODT, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
-    int root = order_of_vars_from_ODT[0]; // root was calculated from layer 0
+    int last_variable = order_of_vars_from_ODT[0]; // root was calculated from layer 0
     int number_of_vars = default_manager.get_var_count();
-    long long number_of_lines = std::pow(2, number_of_vars);
-    std::vector<std::vector<bool>> variables_of_function = default_manager.satisfy_all<std::vector<bool>>(1, diagram);
+    int number_of_lines = std::pow(2, number_of_vars);
+    std::vector<int> new_order = std::vector<int>();
+    new_order.push_back(last_variable);
 
-    // candidates for being a new members of final order (order_of_vars_from_ODT) that is output of this function 
-    std::vector<int> unused_vars = std::vector<int>();
-    for (int v = 0; v < number_of_vars; v++) {
-        if (v == root) { continue; }
-        unused_vars.push_back(v);
+    std::vector<std::vector<bool>> first_variables = default_manager.satisfy_all<std::vector<bool>>(1, diagram);
+    std::vector<std::vector<bool>> second_variables = default_manager.satisfy_all<std::vector<bool>>(1, diagram);
+    std::vector<std::vector<bool>>* from_vars = &first_variables;
+    std::vector<std::vector<bool>>* to_vars = &second_variables;
+
+    std::unordered_map<int, int> index_map_first_variables = std::unordered_map<int, int>(number_of_vars);
+    std::unordered_map<int, int> index_map_second_variables = std::unordered_map<int, int>(number_of_vars);
+    std::unordered_map<int, int>* index_map_from_vars = &index_map_first_variables;
+    std::unordered_map<int, int>* index_map_to_vars = &index_map_second_variables;
+
+    for (int v = 0; v < number_of_vars; ++v) {
+        (*index_map_from_vars)[v] = v;
     }
 
-    // already known variables from upper layers of ODT (from order_of_vars_from_ODT)
-    std::vector<int> known_vars = std::vector<int>();
-    known_vars.push_back(root);
+    std::vector<bool> function_values = std::vector<bool>(number_of_lines, false);
+
+    for (int layer = 1; layer < number_of_vars - 1; ++layer) {
+        std::fill(function_values.begin(), function_values.end(), false);
+        int index_of_constant = (*index_map_from_vars)[last_variable];
+
+
+
+
+        for (int vars_case = 0; vars_case < (*from_vars).size(); ++vars_case) {
+            std::string order_in_function_bin = "";
+            bool value_of_constant;
+            for (int var_from = layer - 1; var_from < number_of_vars; ++var_from) {
+                if (var_from != index_of_constant) {
+                    order_in_function_bin += (*from_vars)[vars_case][var_from] ? "1" : "0";
+                } else {
+                    value_of_constant = (*from_vars)[vars_case][var_from];
+                }
+            }
+            int order_in_function_dec = std::stoi(order_in_function_bin, nullptr, 2);
+
+            std::string which_table_bin = "";
+            for (int var_wt = 0; var_wt < layer - 1; ++var_wt) {
+                which_table_bin += (*from_vars)[vars_case][var_wt] ? "1" : "0";
+            }
+            int which_table_dec = std::stoi(which_table_bin, nullptr, 2);
+
+
+        }
+
+    }
 
 
 
@@ -41,14 +77,15 @@ void DerivativesBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_man
 
 
 
-
-
-
-
+    /*
+    for (int ord = 1; ord < number_of_vars; ++ord) {
+        order_of_vars_from_ODT[ord] = new_order[ord];
+    }
+    */
 
 
     // need to replace at the end
-    for (int j = 0; j < number_of_vars; j++) {
+    for (int j = 0; j < number_of_vars; ++j) {
         order_of_vars_from_ODT[j] = j;
     }
     /////////////////////////

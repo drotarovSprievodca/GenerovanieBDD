@@ -23,8 +23,8 @@ double EntropyBasedOrder::log_2(double value) {
 void EntropyBasedOrder::get_ce_of_all_vars_in_function(teddy::bss_manager& default_manager, std::vector<ce_var>& list_for_reordering, teddy::bss_manager::diagram_t& diagram, int which_diagram) {
     for (int i = 0; i < list_for_reordering.size(); ++i) {
 
-        long long number_of_ones_in_function = default_manager.satisfy_count(1, diagram);
-        long long number_of_zeros_in_function = default_manager.satisfy_count(0, diagram);
+        int number_of_ones_in_function = default_manager.satisfy_count(1, diagram);
+        int number_of_zeros_in_function = default_manager.satisfy_count(0, diagram);
 
         bool save_ones = true; // if variables whose function value is 1 or 0 should be saved
         if (number_of_zeros_in_function < number_of_ones_in_function) {
@@ -48,7 +48,7 @@ void EntropyBasedOrder::get_ce_of_all_vars_in_function(teddy::bss_manager& defau
 
         // number of ones in i-th variable column of full truth table of function 
         // but only where function evaluates to 1 if <save_ones> is true or to 0 if <save_ones> is false
-        long long number_of_ones = 0;
+        int number_of_ones = 0;
 
         for (std::vector<bool> variables_of_one_case : variables_of_function) {
             if (variables_of_one_case[i]) {
@@ -58,10 +58,10 @@ void EntropyBasedOrder::get_ce_of_all_vars_in_function(teddy::bss_manager& defau
 
         // number of zeros in i-th variable column of full truth table of function 
         // but only where function evaluates to 1 if <save_ones> is true or to 0 if <save_ones> is false
-        long long number_of_zeros = variables_of_function.size() - number_of_ones;
+        int number_of_zeros = variables_of_function.size() - number_of_ones;
 
         // number of ones or zeros in variable column of full truth table of function
-        long long sum_of_var = std::pow(2, number_of_vars) / 2;
+        int sum_of_var = std::pow(2, number_of_vars) / 2;
 
         // Conditional probability that function has value 1 or 0 given the condition that variable value is 1 or 0 
         double P_f_0_xi_0 = 0.0;
