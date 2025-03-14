@@ -30,8 +30,11 @@ void DerivativesBasedHigherOrder::get_order_from_higher_order_derivatives(teddy:
         layer_manager.set_auto_reorder(false);
         teddy::bss_manager::diagram_t layer_diagram = layer_manager.from_vector(derived_function);
 
-        double highest_td = 0.0;
-        int var_highest_td = 0;
+        double reference_td = 0.0;
+        if (this->ascending) {
+            reference_td = std::numeric_limits<double>::max();
+        }
+        int var_highest_td = unused_vars[0];
         int index_highest_td = 0;
         std::vector<teddy::bss_manager::diagram_t> dplds = std::vector<teddy::bss_manager::diagram_t>();
 
@@ -39,10 +42,11 @@ void DerivativesBasedHigherOrder::get_order_from_higher_order_derivatives(teddy:
             dplds.push_back(layer_manager.dpld({var_index, 0, 1}, teddy::dpld::basic_undirectional(), layer_diagram));
             int number_of_ones_any_change = layer_manager.satisfy_all<std::vector<int>>(1, dplds[var_index]).size() / 2;
             double true_density = (double)number_of_ones_any_change / (std::pow(2, layer_manager.get_var_count()) / 2);
-            if (true_density > highest_td) {
+            
+            if ((this->ascending) ? true_density < reference_td : true_density > reference_td) {
                 var_highest_td = unused_vars[var_index];
                 index_highest_td = var_index;
-                highest_td = true_density;
+                reference_td = true_density;
             }
         }
 
