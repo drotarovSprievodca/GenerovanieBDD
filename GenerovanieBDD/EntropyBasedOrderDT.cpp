@@ -1,7 +1,7 @@
 #include "EntropyBasedOrderDT.hpp"
 
-EntropyBasedOrderDT::EntropyBasedOrderDT(bool use_var_reordering_heuristics) :
-    EntropyBasedOrder(use_var_reordering_heuristics) {}
+EntropyBasedOrderDT::EntropyBasedOrderDT(bool use_var_reordering_heuristics, bool generate_graph_before_order, bool generate_graph_after_order) :
+    EntropyBasedOrder(use_var_reordering_heuristics, generate_graph_before_order, generate_graph_after_order) {}
 
 EntropyBasedOrderDT::~EntropyBasedOrderDT() {}
 
@@ -120,7 +120,7 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
     order_of_vars_from_ODT[number_of_vars - 1] = unused_vars[0];
 }
 
-void EntropyBasedOrderDT::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
+void EntropyBasedOrderDT::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
     // get function from pla file
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 

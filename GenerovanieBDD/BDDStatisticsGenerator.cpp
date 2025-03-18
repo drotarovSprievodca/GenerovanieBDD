@@ -92,7 +92,7 @@ void BDDStatisticsGenerator::get_statistics() {
         for (int i = 0; i < number_of_functions; ++i) {
             this->csv_output->write_info_about_function(this->find_file_data.cFileName, i + 1, number_of_vars);
             for (Strategy* strategy : this->strategies) {
-                strategy->process_function(default_manager, number_of_vars, pla, this->csv_output, i);
+                strategy->process_function(default_manager, number_of_vars, pla, this->csv_output, i, file_name_without_extension);
             }
             this->csv_output->new_line();
         }

@@ -1,12 +1,12 @@
 #include "OriginalOrder.hpp"
 
-OriginalOrder::OriginalOrder(bool use_var_reordering_heuristics) : 
-    Strategy(use_var_reordering_heuristics) 
+OriginalOrder::OriginalOrder(bool use_var_reordering_heuristics, bool generate_graph_before_order, bool generate_graph_after_order) :
+    Strategy(use_var_reordering_heuristics, generate_graph_before_order, generate_graph_after_order)
 {}
 
 OriginalOrder::~OriginalOrder() {}
 
-void OriginalOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
+void OriginalOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
     // creating manager with original order of variables
     teddy::bss_manager manager(number_of_vars, 100'000);
     manager.set_auto_reorder(false);
@@ -17,6 +17,11 @@ void OriginalOrder::process_function(teddy::bss_manager& default_manager, int nu
     if (this->use_var_reordering_heuristics) {
         // Runs the variable reordering heuristic
         manager.force_reorder();
+    }
+
+    if (!generate_diagram(working_directory_for_graphs, file_name_without_extension, diagram, manager, which_function, false, 0)) {
+        std::cout << "Couldn't generate diagram!!!" << std::endl;
+        return;
     }
 
     std::string var_order = "";

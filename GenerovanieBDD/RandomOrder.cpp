@@ -1,7 +1,7 @@
 #include "RandomOrder.hpp"
 
-RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_replications) : 
-    Strategy(use_var_reordering_heuristics), 
+RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_replications, bool generate_graph_before_order, bool generate_graph_after_order) :
+    Strategy(use_var_reordering_heuristics, generate_graph_before_order, generate_graph_after_order),
     eng(std::random_device{}())
 {
     this->number_of_replications = number_of_replications;
@@ -10,7 +10,7 @@ RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_repli
 
 RandomOrder::~RandomOrder() {}
 
-void RandomOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function) {
+void RandomOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
     this->sum_of_node_counts_in_function_for_all_rep = 0.0;
     for (int r = 0; r < this->number_of_replications; ++r) {
         //std::cout << "Replication " << std::to_string(r) << std::endl;
