@@ -13,6 +13,7 @@
 #include "EntropyBasedOrderDT.hpp"
 #include "DerivativesBasedOrderDT.hpp"
 #include "DerivativesBasedHigherOrder.hpp"
+#include "BestOrder.hpp"
 
 class BDDStatisticsGenerator {
 	public:

@@ -5,52 +5,9 @@
 #include <libteddy/core.hpp>
 #include <vector>
 #include <libteddy/reliability.hpp>
+#include <chrono>
 
 #include "BDDStatisticsGenerator.hpp"
-
-// spytat sa ci sa da TD pre vseobecnu derivaciu vypocitat rychlejsie
-// - objektovo prerobit aj UML-ko tried a vztahov a atributy tried
-// priemerny pocet nodov pre subor
-// priemerny pocet nodov pre funkciu
-// priemerny pocet nodov celkovo
-// skusit vsetky subory s vacsou RAM neskor
-// - skusit aj preusporiadavaciu heuristiku
-// - 4 experimenty aj so zapnutou heuristikou -> 8 experimentov
-// generovanie csv pre vacsi prehlad
-// pre kazdu funkciu len pocet nodov
-// priemer pre vsetky funkcie v subore, pripadne pre vsetky subory
-// dat na vyber:
-// a) pre kazde pla jedno csv
-// b) pre vsetky pla jedno csv -> riadok charakterizovany aj nazvom suboru
-// -> riadky == funkcie
-// -> stlpce: 
-// 1. stpec -> ktora funkcia
-// 2. stlpec -> pocet premennych
-// 3. ... n stlpec -> tych 8 merani -> pre kazde aj poradie premennych
-// v buducnosti usporiadanie pomocou entropie
-
-
-
-// rastuca a klesajuca entropia
-// spolocna (vzajomna) informacia medzi premmennou a funkciou
-// ako mi klesne entropia na funckii ak budem poznat konkretnu prememnu
-// 
-// 1. podobne der
-// H(f) za podmienky ze som poznal hodnotu iba jednej premennej (a)
-// H(f) za podmienky ze som poznal hodnotu iba jednej premennej (b)
-// len o tom co dam do jeho korena
-// 
-// 2.
-// H(f) za predpokladu ze poznam hodnoty viacerych premennych (pri b poznam uz a)
-// na kazdej urovni sa pomocou tej istej premennej usporiaduvalo
-// pomocou entropie sa urcovalo ako sa usporiadaju premenne na kazdej urovni
-// od najvacsej a od najmensej
-// ID3, C45
-// usporiadany rozhodovaci strom
-// ODT
-//
-// a experimenty
-// stale teddy kniznicu na budovanie
 
 
 int main() {
@@ -63,9 +20,11 @@ int main() {
     std::string pla_files_directory = "\\TESTING\\";
     
     BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output_directory, csv_for_every_pla);
-    bddStatisticsGenerator->set_strategy({          
-                                            new OriginalOrder(true, false, false),
+    
+
+    bddStatisticsGenerator->set_strategy({  new BestOrder(false, false)
                                             /*
+                                            new OriginalOrder(false, true, true),
                                             new OriginalOrder(true, false, false),
                                             new DerivativesBasedOrder(false, false, false, false),
                                             new DerivativesBasedOrder(false, true, false, false),
@@ -87,7 +46,15 @@ int main() {
                                             new DerivativesBasedHigherOrder(true, true, false, false)
                                             */
                                         });
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
     bddStatisticsGenerator->get_statistics();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "Execution time: " << duration.count() << " seconds." << std::endl;
+
     delete bddStatisticsGenerator;
     return 0;
 }

@@ -109,6 +109,11 @@ void DerivativesBasedHigherOrder::process_function(teddy::bss_manager& default_m
     // get function from pla file
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
+    if (this->generate_graph_before_order && !generate_diagram(working_directory_for_graphs, file_name_without_extension + "_before", diagram, default_manager, which_function)) {
+        std::cout << "Couldn't generate diagram!!!" << std::endl;
+        return;
+    }
+
     // list for order of variables from ODT from top to bottom
     std::vector<int> order_of_vars_from_HOD = std::vector<int>(number_of_vars);
 
@@ -131,6 +136,11 @@ void DerivativesBasedHigherOrder::process_function(teddy::bss_manager& default_m
     if (this->use_var_reordering_heuristics) {
         // Runs the variable reordering heuristic
         manager_after.force_reorder();
+    }
+
+    if (this->generate_graph_after_order && !generate_diagram(working_directory_for_graphs, file_name_without_extension + "_after", diagram, manager_after, which_function)) {
+        std::cout << "Couldn't generate diagram!!!" << std::endl;
+        return;
     }
 
     std::string var_order = "";

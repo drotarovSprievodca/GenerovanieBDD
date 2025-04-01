@@ -62,7 +62,7 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
             // Runs the variable reordering heuristic
             manager_after.force_reorder();
         }
-        this->sum_of_node_counts_in_function_for_all_rep += manager_after.get_node_count(diagram_after);;
+        this->sum_of_node_counts_in_function_for_all_rep += manager_after.get_node_count(diagram_after);
     }
     this->sum_of_node_counts_in_function_for_all_rep /= this->number_of_replications;
     csv->write_new_stats("", this->sum_of_node_counts_in_function_for_all_rep);

@@ -36,11 +36,8 @@ class Strategy {
             return system(command.c_str()) == 0;
         }
 
-        bool generate_diagram(std::string directory, std::string file_name_without_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function, bool use_replications, int rep) {
+        bool generate_diagram(std::string directory, std::string file_name_without_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
             std::string file_name = file_name_without_extension + "_diagram_" + std::to_string(which_function);
-            if (use_replications) {
-                file_name = file_name + "_rep_" + std::to_string(rep);
-            }
             // generate_dot_file() needs to be returned for proper creating of dot file
             std::string dot_file_path = generate_dot_file(directory, file_name, diagram, manager);
             return convert_dot_file_to_png(directory, file_name, dot_file_path);
