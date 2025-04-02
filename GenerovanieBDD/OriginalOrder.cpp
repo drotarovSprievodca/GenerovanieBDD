@@ -14,7 +14,7 @@ void OriginalOrder::process_function(teddy::bss_manager& default_manager, int nu
     // get n-th diagram from pla file 
     teddy::bss_manager::diagram_t diagram = manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
-    if (this->generate_graph_before_order && !generate_diagram(working_directory_for_graphs, file_name_without_extension + "_before", diagram, manager, which_function)) {
+    if (this->generate_graph_before_order && !generate_diagram(file_name_without_extension + "_before", diagram, manager, which_function)) {
         std::cout << "Couldn't generate diagram!!!" << std::endl;
         return;
     }
@@ -24,7 +24,7 @@ void OriginalOrder::process_function(teddy::bss_manager& default_manager, int nu
         manager.force_reorder();
     }
 
-    if (this->generate_graph_after_order && !generate_diagram(working_directory_for_graphs, file_name_without_extension + "_after", diagram, manager, which_function)) {
+    if (this->generate_graph_after_order && !generate_diagram(file_name_without_extension + "_after", diagram, manager, which_function)) {
         std::cout << "Couldn't generate diagram!!!" << std::endl;
         return;
     }

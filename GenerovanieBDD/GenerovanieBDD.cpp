@@ -6,7 +6,10 @@
 #include <vector>
 #include <libteddy/reliability.hpp>
 #include <chrono>
+#include <iostream>
+#include <fstream>
 
+#include "json.hpp"
 #include "BDDStatisticsGenerator.hpp"
 
 
@@ -18,6 +21,20 @@ int main() {
     bool csv_for_every_pla = false;
     std::string csv_output_directory = "\\csv_output\\";
     std::string pla_files_directory = "\\TESTING\\";
+
+
+    std::ifstream config_file("config.json");
+    if (!config_file.is_open()) {
+        std::cerr << "Could not open config file!" << std::endl;
+        return 1;
+    }
+
+    nlohmann::json config;
+    config_file >> config;
+    config_file.close();
+    std::cout << config.value("working_directory", "") << std::endl;
+    
+    return 0;
     
     BDDStatisticsGenerator* bddStatisticsGenerator = new BDDStatisticsGenerator(working_directory, pla_files_directory, csv_output_directory, csv_for_every_pla);
     

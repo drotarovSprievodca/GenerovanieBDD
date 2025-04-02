@@ -128,7 +128,7 @@ void EntropyBasedOrder::process_function(teddy::bss_manager& default_manager, in
     // get function from pla file
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
-    if (this->generate_graph_before_order && !generate_diagram(working_directory_for_graphs, file_name_without_extension + "_before", diagram, default_manager, which_function)) {
+    if (this->generate_graph_before_order && !generate_diagram(file_name_without_extension + "_before", diagram, default_manager, which_function)) {
         std::cout << "Couldn't generate diagram!!!" << std::endl;
         return;
     }
@@ -173,7 +173,7 @@ void EntropyBasedOrder::process_function(teddy::bss_manager& default_manager, in
         manager_after.force_reorder();
     }
 
-    if (this->generate_graph_after_order && !generate_diagram(working_directory_for_graphs, file_name_without_extension + "_after", diagram, manager_after, which_function)) {
+    if (this->generate_graph_after_order && !generate_diagram(file_name_without_extension + "_after", diagram, manager_after, which_function)) {
         std::cout << "Couldn't generate diagram!!!" << std::endl;
         return;
     }
