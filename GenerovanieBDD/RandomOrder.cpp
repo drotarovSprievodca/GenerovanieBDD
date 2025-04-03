@@ -74,3 +74,7 @@ std::string RandomOrder::to_string() {
     return_string += " RH (# of nodes)";
     return return_string;
 }
+
+std::string RandomOrder::get_strategy_name() {
+    return "RandomOrder";
+}

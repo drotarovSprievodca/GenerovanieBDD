@@ -165,3 +165,7 @@ std::string DerivativesBasedHigherOrder::to_string() {
 
     return return_string;
 }
+
+std::string DerivativesBasedHigherOrder::get_strategy_name() {
+    return "DerivativesBasedHigherOrder";
+}

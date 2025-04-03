@@ -327,3 +327,7 @@ std::string DerivativesBasedOrderDT::to_string() {
 
     return return_string;
 }
+
+std::string DerivativesBasedOrderDT::get_strategy_name() {
+    return "DerivativesBasedOrderDT";
+}

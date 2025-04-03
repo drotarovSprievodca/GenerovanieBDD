@@ -198,3 +198,7 @@ std::string EntropyBasedOrder::to_string() {
 
     return return_string;
 }
+
+std::string EntropyBasedOrder::get_strategy_name() {
+    return "EntropyBasedOrder";
+}

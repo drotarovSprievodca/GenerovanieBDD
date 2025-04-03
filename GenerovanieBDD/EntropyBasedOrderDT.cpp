@@ -209,3 +209,7 @@ std::string EntropyBasedOrderDT::to_string() {
 
     return return_string;
 }
+
+std::string EntropyBasedOrderDT::get_strategy_name() {
+    return "EntropyBasedOrderDT";
+}

@@ -29,9 +29,18 @@ void BDDStatisticsGenerator::remove_strategy(int i) {
 }
 
 void BDDStatisticsGenerator::print_strategies() {
-    for (Strategy* s : this->strategies) {
-        std::cout << s->to_string() << std::endl;
+    std::cout << "Currently set strategies:" << std::endl;
+    if (this->strategies.size() == 0) {
+        std::cout << "There are no strategies set !!!" << std::endl;
+    } else {
+        for (int i = 0; i < this->strategies.size(); ++i) {
+            std::cout << std::to_string(i) << " - " << this->strategies[i]->get_strategy_name() << std::endl;
+        }
     }
+}
+
+int BDDStatisticsGenerator::size_of_strategies() {
+    return this->strategies.size();
 }
 
 void BDDStatisticsGenerator::get_statistics() {

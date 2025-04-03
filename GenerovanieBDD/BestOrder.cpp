@@ -88,3 +88,7 @@ std::string BestOrder::to_string() {
     return_string += "Best w/o RH (# of nodes)";
     return return_string;
 }
+
+std::string BestOrder::get_strategy_name() {
+    return "BestOrder";
+}

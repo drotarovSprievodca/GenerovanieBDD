@@ -23,6 +23,7 @@ class BDDStatisticsGenerator {
 		void add_strategy(Strategy* strategy);
 		void remove_strategy(int i);
 		void print_strategies();
+		int size_of_strategies();
 		void get_statistics();
 	private:
 		std::string working_directory;

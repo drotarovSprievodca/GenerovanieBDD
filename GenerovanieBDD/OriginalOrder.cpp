@@ -46,3 +46,7 @@ std::string OriginalOrder::to_string() {
     return_string += " RH (# of nodes)";
     return return_string;
 }
+
+std::string OriginalOrder::get_strategy_name() {
+    return "OriginalOrder";
+}

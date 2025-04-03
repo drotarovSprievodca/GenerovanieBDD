@@ -144,3 +144,7 @@ std::string DerivativesBasedOrder::to_string() {
 
     return return_string;
 }
+
+std::string DerivativesBasedOrder::get_strategy_name() {
+    return "DerivativesBasedOrder";
+}
