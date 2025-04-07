@@ -175,7 +175,7 @@ void EntropyBasedOrderDT::process_function(teddy::bss_manager& default_manager, 
     }
 
     // creating manager with new order of variables based on conditional entropy from ODT
-    teddy::bss_manager manager_after(number_of_vars, 100'000, order_after);
+    teddy::bss_manager manager_after(number_of_vars, 10'000, order_after);
     manager_after.set_auto_reorder(false);
     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
@@ -211,5 +211,12 @@ std::string EntropyBasedOrderDT::to_string() {
 }
 
 std::string EntropyBasedOrderDT::get_strategy_name() {
-    return "EntropyBasedOrderDT";
+    std::string return_string = "Entropy and ODT based order, Ascending conditional entropy, Reordering heuristic: ";
+    return_string += this->use_var_reordering_heuristics ? "YES" : "NO";
+    return_string += " Generate graph before order: ";
+    return_string += this->generate_graph_before_order ? "YES" : "NO";
+    return_string += " Generate graph after order: ";
+    return_string += this->generate_graph_after_order ? "YES" : "NO";
+
+    return return_string;
 }

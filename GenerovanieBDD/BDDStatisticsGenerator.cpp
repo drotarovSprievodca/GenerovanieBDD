@@ -88,7 +88,7 @@ void BDDStatisticsGenerator::get_statistics() {
         std::string file_name_without_extension = "file_" + file_path.stem().string();
 
         // Creating manager with default order of variables
-        teddy::bss_manager default_manager(number_of_vars, 100'000);
+        teddy::bss_manager default_manager(number_of_vars, 10'000);
 
         // Disable automatic variable reordering.
         default_manager.set_auto_reorder(false);

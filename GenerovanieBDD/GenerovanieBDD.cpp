@@ -7,6 +7,7 @@
 #include <libteddy/reliability.hpp>
 #include <chrono>
 #include <iostream>
+#include <cstdlib>
 #include <fstream>
 
 #include "json.hpp"
@@ -61,7 +62,7 @@ int main() {
         }
 
         // clear console
-        std::cout << "\033[2J\033[H";
+        system("cls");
 
         switch (num_option) {
             case 1:
@@ -92,7 +93,7 @@ int main() {
                     break;
                 } 
                 // clear console
-                std::cout << "\033[2J\033[H";
+                system("cls");
                 
                 int num_for_sift = 2;
                 if (num_for_add != 8) {
@@ -114,7 +115,7 @@ int main() {
                         break;
                     }
                     // clear console
-                    std::cout << "\033[2J\033[H";
+                    system("cls");
                 }
 
                 std::cout << "Should it generate diagram before reordering? Enter number of option." << std::endl;
@@ -135,7 +136,7 @@ int main() {
                     break;
                 }
                 // clear console
-                std::cout << "\033[2J\033[H";
+                system("cls");
 
                 std::cout << "Should it generate diagram after reordering? Enter number of option." << std::endl;
                 std::cout << "1 - YES" << std::endl;
@@ -155,7 +156,7 @@ int main() {
                     break;
                 }
                 // clear console
-                std::cout << "\033[2J\033[H";
+                system("cls");
 
                 int num_for_TD = 2;
                 if (num_for_add == 2 || num_for_add == 6 || num_for_add == 7) {
@@ -177,7 +178,7 @@ int main() {
                         break;
                     }
                     // clear console
-                    std::cout << "\033[2J\033[H";
+                    system("cls");
                 }
 
                 bool use_var_reordering_heuristsics = false;
@@ -205,7 +206,7 @@ int main() {
                         bddStatisticsGenerator->add_strategy(new DerivativesBasedOrder(use_var_reordering_heuristsics, ascending, generate_graph_before_order, generate_graph_after_order));
                         break;
                     case 3:
-                        bddStatisticsGenerator->add_strategy(new RandomOrder(use_var_reordering_heuristsics, number_of_replications, generate_graph_before_order, generate_graph_after_order));
+                        bddStatisticsGenerator->add_strategy(new RandomOrder(use_var_reordering_heuristsics, number_of_replications));
                         break;
                     case 4:
                         bddStatisticsGenerator->add_strategy(new EntropyBasedOrder(use_var_reordering_heuristsics, generate_graph_before_order, generate_graph_after_order));
@@ -247,7 +248,7 @@ int main() {
                     break;
                 }
                 // clear console
-                std::cout << "\033[2J\033[H";
+                system("cls");
                 bddStatisticsGenerator->remove_strategy(num_for_delete);
                 break;
             }

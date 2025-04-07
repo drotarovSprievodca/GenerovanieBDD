@@ -108,7 +108,7 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
     }
 
     // creating manager with new order of variables based on true density
-    teddy::bss_manager manager_after(number_of_vars, 100'000, order_after);
+    teddy::bss_manager manager_after(number_of_vars, 10'000, order_after);
     manager_after.set_auto_reorder(false);
     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
@@ -146,5 +146,14 @@ std::string DerivativesBasedOrder::to_string() {
 }
 
 std::string DerivativesBasedOrder::get_strategy_name() {
-    return "DerivativesBasedOrder";
+    std::string return_string = "Derivatives based order, ";
+    return_string += this->ascending ? "Ascending" : "Descending";
+    return_string += " TD, Reordering heuristic: ";
+    return_string += this->use_var_reordering_heuristics ? "YES" : "NO";
+    return_string += " Generate graph before order: ";
+    return_string += this->generate_graph_before_order ? "YES" : "NO";
+    return_string += " Generate graph after order: ";
+    return_string += this->generate_graph_after_order ? "YES" : "NO";
+
+    return return_string;
 }

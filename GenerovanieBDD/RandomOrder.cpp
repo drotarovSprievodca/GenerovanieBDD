@@ -1,7 +1,7 @@
 #include "RandomOrder.hpp"
 
-RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_replications, bool generate_graph_before_order, bool generate_graph_after_order) :
-    Strategy(use_var_reordering_heuristics, generate_graph_before_order, generate_graph_after_order),
+RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_replications) :
+    Strategy(use_var_reordering_heuristics, false, false),
     eng(std::random_device{}())
 {
     this->number_of_replications = number_of_replications;
@@ -52,7 +52,7 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
         }
 
         // creating manager with new random order of variables
-        teddy::bss_manager manager_after(number_of_vars, 100'000, random_order);
+        teddy::bss_manager manager_after(number_of_vars, 10'000, random_order);
         manager_after.set_auto_reorder(false);
 
         // get i-th diagram from pla file 
@@ -76,5 +76,9 @@ std::string RandomOrder::to_string() {
 }
 
 std::string RandomOrder::get_strategy_name() {
-    return "RandomOrder";
+    std::string return_string = "Random order, Reordering heuristic: ";
+    return_string += this->use_var_reordering_heuristics ? "YES" : "NO";
+    return_string += "Number of replications: " + std::to_string(this->number_of_replications);
+
+    return return_string;
 }

@@ -33,7 +33,7 @@ void BestOrder::process_function(teddy::bss_manager& default_manager, int number
             teddy_order[i] = order[i];
         }
 
-        teddy::bss_manager order_manager(number_of_vars, 100'000, teddy_order);
+        teddy::bss_manager order_manager(number_of_vars, 10'000, teddy_order);
         order_manager.set_auto_reorder(false);
         teddy::bss_manager::diagram_t diagram_after = order_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
         int node_count = order_manager.get_node_count(diagram_after);
@@ -64,7 +64,7 @@ void BestOrder::process_function(teddy::bss_manager& default_manager, int number
     }
 
     // creating manager with new random order of variables
-    teddy::bss_manager manager_after(number_of_vars, 100'000, best_order_teddy);
+    teddy::bss_manager manager_after(number_of_vars, 10'000, best_order_teddy);
     manager_after.set_auto_reorder(false);
 
     // get i-th diagram from pla file 
@@ -90,5 +90,10 @@ std::string BestOrder::to_string() {
 }
 
 std::string BestOrder::get_strategy_name() {
-    return "BestOrder";
+    std::string return_string = "Random order, Generate graph before order: ";
+    return_string += this->generate_graph_before_order ? "YES" : "NO";
+    return_string += " Generate graph after order: ";
+    return_string += this->generate_graph_after_order ? "YES" : "NO";
+
+    return return_string;
 }

@@ -8,7 +8,7 @@ OriginalOrder::~OriginalOrder() {}
 
 void OriginalOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
     // creating manager with original order of variables
-    teddy::bss_manager manager(number_of_vars, 100'000);
+    teddy::bss_manager manager(number_of_vars, 10'000);
     manager.set_auto_reorder(false);
 
     // get n-th diagram from pla file 
@@ -48,5 +48,12 @@ std::string OriginalOrder::to_string() {
 }
 
 std::string OriginalOrder::get_strategy_name() {
-    return "OriginalOrder";
+    std::string return_string = "Original order, Reordering heuristic: ";
+    return_string += this->use_var_reordering_heuristics ? "YES" : "NO";
+    return_string += " Generate graph before order: ";
+    return_string += this->generate_graph_before_order ? "YES" : "NO";
+    return_string += " Generate graph after order: ";
+    return_string += this->generate_graph_after_order ? "YES" : "NO";
+
+    return return_string;
 }

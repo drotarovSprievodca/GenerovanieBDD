@@ -11,8 +11,8 @@ class Strategy {
         bool use_var_reordering_heuristics;
         bool generate_graph_before_order;
         bool generate_graph_after_order;
-        std::string working_directory_for_graphs = "C:\\Users\\DELL\\git\\Diplomka\\GenerovanieBDD";
-        std::string graphviz_exe_path = "C:\\\"Program Files\"\\Graphviz\\bin\\dot.exe";
+        std::string working_directory_for_graphs;
+        std::string graphviz_exe_path;
 
     public:
         Strategy(bool use_var_reordering_heuristics, bool generate_graph_before_order, bool generate_graph_after_order) : 

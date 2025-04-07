@@ -26,7 +26,7 @@ void DerivativesBasedHigherOrder::get_order_from_higher_order_derivatives(teddy:
     
 
     for (int layer = 0; layer < number_of_vars - 1; ++layer) {
-        teddy::bss_manager layer_manager(number_of_vars - layer, 100'000);
+        teddy::bss_manager layer_manager(number_of_vars - layer, 10'000);
         layer_manager.set_auto_reorder(false);
         teddy::bss_manager::diagram_t layer_diagram = layer_manager.from_vector(derived_function);
 
@@ -129,7 +129,7 @@ void DerivativesBasedHigherOrder::process_function(teddy::bss_manager& default_m
     }
 
     // creating manager with new order of variables based on true density
-    teddy::bss_manager manager_after(number_of_vars, 100'000, order_after);
+    teddy::bss_manager manager_after(number_of_vars, 10'000, order_after);
     manager_after.set_auto_reorder(false);
     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
@@ -167,5 +167,14 @@ std::string DerivativesBasedHigherOrder::to_string() {
 }
 
 std::string DerivativesBasedHigherOrder::get_strategy_name() {
-    return "DerivativesBasedHigherOrder";
+    std::string return_string = "Higher derivatives based order, ";
+    return_string += this->ascending ? "Ascending" : "Descending";
+    return_string += " TD, Reordering heuristic: ";
+    return_string += this->use_var_reordering_heuristics ? "YES" : "NO";
+    return_string += " Generate graph before order: ";
+    return_string += this->generate_graph_before_order ? "YES" : "NO";
+    return_string += " Generate graph after order: ";
+    return_string += this->generate_graph_after_order ? "YES" : "NO";
+
+    return return_string;
 }
