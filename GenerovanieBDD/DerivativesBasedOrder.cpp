@@ -117,7 +117,7 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
         manager_after.force_reorder();
     }
 
-    if (this->generate_graph_after_order && !generate_diagram(file_name_without_extension + "_after", diagram, manager_after, which_function)) {
+    if (this->generate_graph_after_order && !generate_diagram(file_name_without_extension + "_after", diagram_after, manager_after, which_function)) {
         std::cout << "Couldn't generate diagram!!!" << std::endl;
         return;
     }

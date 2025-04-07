@@ -153,7 +153,6 @@ int main() {
                     std::cout << "1 - Ascending" << std::endl;
                     std::cout << "2 - Descending" << std::endl;
                     std::string for_TD;
-                    int num_for_TD;
                     std::getline(std::cin, for_TD);
                     try {
                         num_for_TD = std::stoi(for_TD);

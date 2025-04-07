@@ -70,7 +70,7 @@ void BestOrder::process_function(teddy::bss_manager& default_manager, int number
     // get i-th diagram from pla file 
     teddy::bss_manager::diagram_t diagram_after = manager_after.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
-    if (this->generate_graph_after_order && !generate_diagram(file_name_without_extension + "_after", diagram, manager_after, which_function)) {
+    if (this->generate_graph_after_order && !generate_diagram(file_name_without_extension + "_after", diagram_after, manager_after, which_function)) {
         std::cout << "Couldn't generate diagram!!!" << std::endl;
         return;
     }
