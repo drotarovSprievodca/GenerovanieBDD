@@ -61,9 +61,6 @@ int main() {
             break;
         }
 
-        // clear console
-        system("cls");
-
         switch (num_option) {
             case 1:
                 bddStatisticsGenerator->print_strategies();
@@ -92,8 +89,6 @@ int main() {
                     std::cout << "Enter valid option!!!" << std::endl;
                     break;
                 } 
-                // clear console
-                system("cls");
                 
                 int num_for_sift = 2;
                 if (num_for_add != 8) {
@@ -114,8 +109,6 @@ int main() {
                         std::cout << "Enter valid option!!!" << std::endl;
                         break;
                     }
-                    // clear console
-                    system("cls");
                 }
 
                 std::cout << "Should it generate diagram before reordering? Enter number of option." << std::endl;
@@ -135,8 +128,6 @@ int main() {
                     std::cout << "Enter valid option!!!" << std::endl;
                     break;
                 }
-                // clear console
-                system("cls");
 
                 std::cout << "Should it generate diagram after reordering? Enter number of option." << std::endl;
                 std::cout << "1 - YES" << std::endl;
@@ -155,8 +146,6 @@ int main() {
                     std::cout << "Enter valid option!!!" << std::endl;
                     break;
                 }
-                // clear console
-                system("cls");
 
                 int num_for_TD = 2;
                 if (num_for_add == 2 || num_for_add == 6 || num_for_add == 7) {
@@ -177,8 +166,6 @@ int main() {
                         std::cout << "Enter valid option!!!" << std::endl;
                         break;
                     }
-                    // clear console
-                    system("cls");
                 }
 
                 bool use_var_reordering_heuristsics = false;
@@ -247,8 +234,7 @@ int main() {
                     std::cout << "Enter valid option!!!" << std::endl;
                     break;
                 }
-                // clear console
-                system("cls");
+
                 bddStatisticsGenerator->remove_strategy(num_for_delete);
                 break;
             }
@@ -296,6 +282,6 @@ int main() {
                                         });
     */
     delete bddStatisticsGenerator;
-    system("pause");
+    std::cin.get();
     return 0;
 }

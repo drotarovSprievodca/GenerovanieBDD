@@ -90,7 +90,7 @@ std::string BestOrder::to_string() {
 }
 
 std::string BestOrder::get_strategy_name() {
-    std::string return_string = "Random order, Generate graph before order: ";
+    std::string return_string = "Best order, Generate graph before order: ";
     return_string += this->generate_graph_before_order ? "YES" : "NO";
     return_string += " Generate graph after order: ";
     return_string += this->generate_graph_after_order ? "YES" : "NO";
