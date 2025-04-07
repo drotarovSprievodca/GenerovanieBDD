@@ -3,6 +3,7 @@
 #include <iostream>
 #include <libteddy/reliability.hpp>
 #include "json.hpp"
+#include <chrono>
 
 #include "CSVOutput.hpp"
 
@@ -13,12 +14,14 @@ class Strategy {
         bool generate_graph_after_order;
         std::string working_directory_for_graphs;
         std::string graphviz_exe_path;
+        double timer; // lasting of strategy proccessing in seconds
 
     public:
         Strategy(bool use_var_reordering_heuristics, bool generate_graph_before_order, bool generate_graph_after_order) : 
             use_var_reordering_heuristics(use_var_reordering_heuristics),
             generate_graph_before_order(generate_graph_before_order),
-            generate_graph_after_order(generate_graph_after_order)
+            generate_graph_after_order(generate_graph_after_order),
+            timer(0.0)
         {
             std::ifstream config_file("config.json");
             if (!config_file.is_open()) {
@@ -63,6 +66,18 @@ class Strategy {
             // generate_dot_file() needs to be returned for proper creating of dot file
             std::string dot_file_path = generate_dot_file(file_name, diagram, manager);
             return convert_dot_file_to_png(file_name, dot_file_path);
+        }
+
+        void add_to_timer(double time_to_add) {
+            timer += time_to_add;
+        }
+
+        double get_timer() {
+            return timer;
+        }
+
+        void clear_timer() {
+            timer = 0.0;
         }
 };
 

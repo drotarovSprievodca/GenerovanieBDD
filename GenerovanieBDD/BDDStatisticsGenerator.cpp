@@ -108,6 +108,14 @@ void BDDStatisticsGenerator::get_statistics() {
 
         // close csv file if there is one csv per pla file
         if (this->csv_output->get_csv_for_every_pla()) {
+            std::vector<double> strategy_timers = std::vector<double>(this->strategies.size());
+            for (int i = 0; i < this->strategies.size(); ++i) {
+                strategy_timers[i] = this->strategies[i]->get_timer();
+            }
+            this->csv_output->write_strategy_times(strategy_timers);
+            for (Strategy* strategy : this->strategies) {
+                strategy->clear_timer();
+            }
             this->csv_output->close_csv();
         }
 
@@ -115,6 +123,11 @@ void BDDStatisticsGenerator::get_statistics() {
     
     // close csv file if there is only one csv for all pla files
     if (!this->csv_output->get_csv_for_every_pla()) {
+        std::vector<double> strategy_timers = std::vector<double>(this->strategies.size());
+        for (int i = 0; i < this->strategies.size(); ++i) {
+            strategy_timers[i] = this->strategies[i]->get_timer();
+        }
+        this->csv_output->write_strategy_times(strategy_timers);
         this->csv_output->close_csv();
     }
 

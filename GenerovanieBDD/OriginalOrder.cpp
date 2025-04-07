@@ -7,6 +7,7 @@ OriginalOrder::OriginalOrder(bool use_var_reordering_heuristics, bool generate_g
 OriginalOrder::~OriginalOrder() {}
 
 void OriginalOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
+    auto start = std::chrono::high_resolution_clock::now();
     // creating manager with original order of variables
     teddy::bss_manager manager(number_of_vars, 10'000);
     manager.set_auto_reorder(false);
@@ -35,6 +36,10 @@ void OriginalOrder::process_function(teddy::bss_manager& default_manager, int nu
         var_order += std::to_string(x);
     }
     csv->write_new_stats(var_order, (double)manager.get_node_count(diagram));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    this->add_to_timer(duration.count());
 }
 
 std::string OriginalOrder::to_string() {

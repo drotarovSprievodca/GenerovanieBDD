@@ -22,6 +22,8 @@ class CSVOutput {
 		void set_header(std::string header);
 		bool close_csv();
 		void write_info_about_function(std::string file_name, int which_function, int number_of_vars);
+		void write_strategy_times(std::vector<double>& strategy_timers);
+		std::string round_to_number_of_dec_places(double number_to_round, int number_of_dec_places);
 		void write_new_stats(std::string order, double node_count);
 		void new_line();
 };

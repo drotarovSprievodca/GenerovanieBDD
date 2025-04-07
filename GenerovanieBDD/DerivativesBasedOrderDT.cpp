@@ -233,6 +233,7 @@ void DerivativesBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_man
 }
 
 void DerivativesBasedOrderDT::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
+    auto start = std::chrono::high_resolution_clock::now();
     // get function from pla file
     teddy::bss_manager::diagram_t diagram = default_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
 
@@ -311,6 +312,10 @@ void DerivativesBasedOrderDT::process_function(teddy::bss_manager& default_manag
         var_order += std::to_string(x);
     }
     csv->write_new_stats(var_order, (double)manager_after.get_node_count(diagram_after));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    this->add_to_timer(duration.count());
 }
 
 std::string DerivativesBasedOrderDT::to_string() {

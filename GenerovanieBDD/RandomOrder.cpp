@@ -11,6 +11,7 @@ RandomOrder::RandomOrder(bool use_var_reordering_heuristics, int number_of_repli
 RandomOrder::~RandomOrder() {}
 
 void RandomOrder::process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) {
+    auto start = std::chrono::high_resolution_clock::now();
     this->sum_of_node_counts_in_function_for_all_rep = 0.0;
     for (int r = 0; r < this->number_of_replications; ++r) {
         //std::cout << "Replication " << std::to_string(r) << std::endl;
@@ -66,10 +67,14 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
     }
     this->sum_of_node_counts_in_function_for_all_rep /= this->number_of_replications;
     csv->write_new_stats("", this->sum_of_node_counts_in_function_for_all_rep);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    this->add_to_timer(duration.count());
 }
 
 std::string RandomOrder::to_string() {
-    std::string return_string = "Random w";
+    std::string return_string = ";Random w";
     return_string += this->use_var_reordering_heuristics ? "" : "/o";
     return_string += " RH (# of nodes)";
     return return_string;
@@ -78,7 +83,7 @@ std::string RandomOrder::to_string() {
 std::string RandomOrder::get_strategy_name() {
     std::string return_string = "Random order, Reordering heuristic: ";
     return_string += this->use_var_reordering_heuristics ? "YES" : "NO";
-    return_string += "Number of replications: " + std::to_string(this->number_of_replications);
+    return_string += " Number of replications: " + std::to_string(this->number_of_replications);
 
     return return_string;
 }

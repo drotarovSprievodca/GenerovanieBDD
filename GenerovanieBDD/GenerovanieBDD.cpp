@@ -5,7 +5,6 @@
 #include <libteddy/core.hpp>
 #include <vector>
 #include <libteddy/reliability.hpp>
-#include <chrono>
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -239,11 +238,7 @@ int main() {
             }
             case 4: {
                 if (bddStatisticsGenerator->size_of_strategies() > 0) {
-                    auto start = std::chrono::high_resolution_clock::now();
                     bddStatisticsGenerator->get_statistics();
-                    auto end = std::chrono::high_resolution_clock::now();
-                    std::chrono::duration<double> duration = end - start;
-                    std::cout << "Execution time: " << duration.count() << " seconds." << std::endl;
                     exit_still_not_selected = false;
                 }
                 break;

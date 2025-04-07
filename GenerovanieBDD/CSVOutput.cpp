@@ -82,20 +82,31 @@ void CSVOutput::write_info_about_function(std::string file_name, int which_funct
 	this->csv_file_stream << file_name << ";" << "f" << std::to_string(which_function) << ";" << std::to_string(number_of_vars);
 }
 
-void CSVOutput::write_new_stats(std::string order, double node_count) {
-	if (order != "") {
-		this->csv_file_stream << ";" << order;
+void CSVOutput::write_strategy_times(std::vector<double>& strategy_timers) {
+	std::string timers = "time(sec);;";
+	for (double timer : strategy_timers) {
+		timers += ";";
+		timers += this->round_to_number_of_dec_places(timer, 2);
+		timers += ";";
 	}
+	this->csv_file_stream << timers;
+}
 
+std::string CSVOutput::round_to_number_of_dec_places(double number_to_round, int number_of_dec_places) {
 	std::ostringstream oss;
-	oss << std::fixed << std::setprecision(2) << node_count;
-	std::string two_dec_places_precise_number = oss.str();
-	for (char& c : two_dec_places_precise_number) {
+	oss << std::fixed << std::setprecision(number_of_dec_places) << number_to_round;
+	std::string rounded_number = oss.str();
+	for (char& c : rounded_number) {
 		if (c == '.') {
 			c = ',';
 		}
 	}
-	this->csv_file_stream << ";" << two_dec_places_precise_number;
+	return rounded_number;
+}
+
+void CSVOutput::write_new_stats(std::string order, double node_count) {
+	this->csv_file_stream << ";" << order;
+	this->csv_file_stream << ";" << this->round_to_number_of_dec_places(node_count, 2);
 }
 
 void CSVOutput::new_line() {
