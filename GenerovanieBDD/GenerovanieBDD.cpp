@@ -296,5 +296,6 @@ int main() {
                                         });
     */
     delete bddStatisticsGenerator;
+    system("pause");
     return 0;
 }
