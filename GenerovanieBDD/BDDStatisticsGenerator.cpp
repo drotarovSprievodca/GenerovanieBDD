@@ -43,6 +43,12 @@ int BDDStatisticsGenerator::size_of_strategies() {
     return this->strategies.size();
 }
 
+void BDDStatisticsGenerator::set_ids() {
+    for (int i = 0; i < this->strategies.size(); ++i) {
+        this->strategies[i]->set_id(i);
+    }
+}
+
 void BDDStatisticsGenerator::get_statistics() {
     // try to open data_directory
 	this->h_find = FindFirstFile((this->data_directory + "*").c_str(), &this->find_file_data);
@@ -62,7 +68,7 @@ void BDDStatisticsGenerator::get_statistics() {
     header += "\n";
     this->csv_output->set_header(header);
     
-    // iterate through all pla files in data_directory for each strategy
+    // iterate through all pla files in data_directory
     do {
         // skip . and .. in data_directory
         if (std::string(this->find_file_data.cFileName) == "." || std::string(this->find_file_data.cFileName) == "..") {

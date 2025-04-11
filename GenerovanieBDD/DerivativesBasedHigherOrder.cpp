@@ -24,7 +24,6 @@ void DerivativesBasedHigherOrder::get_order_from_higher_order_derivatives(teddy:
     }
     original_function = std::vector<int>(); // deallocate vector
     
-
     for (int layer = 0; layer < number_of_vars - 1; ++layer) {
         teddy::bss_manager layer_manager(number_of_vars - layer, 10'000);
         layer_manager.set_auto_reorder(false);

@@ -15,6 +15,7 @@ class Strategy {
         std::string working_directory_for_graphs;
         std::string graphviz_exe_path;
         double timer; // lasting of strategy proccessing in seconds
+        int id;
 
     public:
         Strategy(bool use_var_reordering_heuristics, bool generate_graph_before_order, bool generate_graph_after_order) : 
@@ -32,8 +33,8 @@ class Strategy {
             config_file >> config;
             config_file.close();
 
-            std::string working_directory_for_graphs = config.value("working_directory_for_graphs", "");
-            std::string graphviz_exe_path = config.value("graphviz_exe_path", "");
+            this->working_directory_for_graphs = config.value("working_directory_for_graphs", "");
+            this->graphviz_exe_path = config.value("graphviz_exe_path", "");
         };
         virtual ~Strategy() = default;
         virtual void process_function(teddy::bss_manager& default_manager, int number_of_vars, teddy::pla_file* pla, CSVOutput* csv, int which_function, std::string file_name_without_extension) = 0;
@@ -55,6 +56,10 @@ class Strategy {
             return graphviz_exe_path;
         }
 
+        void set_id(int id_of_strategy) {
+            id = id_of_strategy;
+        }
+
         bool convert_dot_file_to_png(std::string file_name, std::string diagram_dot) {
             std::string diagram_png = working_directory_for_graphs + "\\diagrams\\png_diag\\" + file_name + ".png";
             std::string command = graphviz_exe_path + " -Tpng " + diagram_dot + " -o " + diagram_png;
@@ -62,7 +67,7 @@ class Strategy {
         }
 
         bool generate_diagram(std::string file_name_without_extension, teddy::bss_manager::diagram_t& diagram, teddy::bss_manager& manager, int which_function) {
-            std::string file_name = file_name_without_extension + "_diagram_" + std::to_string(which_function);
+            std::string file_name = file_name_without_extension + "_diagram_" + std::to_string(which_function) + "_strategy_" + std::to_string(id);
             // generate_dot_file() needs to be returned for proper creating of dot file
             std::string dot_file_path = generate_dot_file(file_name, diagram, manager);
             return convert_dot_file_to_png(file_name, dot_file_path);

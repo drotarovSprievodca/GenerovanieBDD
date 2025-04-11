@@ -238,6 +238,7 @@ int main() {
             }
             case 4: {
                 if (bddStatisticsGenerator->size_of_strategies() > 0) {
+                    bddStatisticsGenerator->set_ids();
                     bddStatisticsGenerator->get_statistics();
                     exit_still_not_selected = false;
                 }
@@ -250,32 +251,9 @@ int main() {
         }
     }
 
-    /*
-    bddStatisticsGenerator->set_strategy({  
-                                            new OriginalOrder(false, true, true),
-                                            new OriginalOrder(true, false, false),
-                                            new DerivativesBasedOrder(false, false, false, false),
-                                            new DerivativesBasedOrder(false, true, false, false),
-                                            new DerivativesBasedOrder(true, false, false, false),
-                                            new DerivativesBasedOrder(true, true, false, false),
-                                            new RandomOrder(false, number_of_replications, false, false),
-                                            new RandomOrder(true, number_of_replications, false, false),
-                                            new EntropyBasedOrder(false, false, false),
-                                            new EntropyBasedOrder(true, false, false),
-                                            new EntropyBasedOrderDT(false, false, false),
-                                            new EntropyBasedOrderDT(true, false, false),
-                                            new DerivativesBasedOrderDT(false, false, false, false),
-                                            new DerivativesBasedOrderDT(false, true, false, false),
-                                            new DerivativesBasedOrderDT(true, false, false, false),
-                                            new DerivativesBasedOrderDT(true, true, false, false),
-                                            new DerivativesBasedHigherOrder(false, false, false, false),
-                                            new DerivativesBasedHigherOrder(false, true, false, false),
-                                            new DerivativesBasedHigherOrder(true, false, false, false),
-                                            new DerivativesBasedHigherOrder(true, true, false, false),
-                                            new BestOrder(false, false)  
-                                        });
-    */
     delete bddStatisticsGenerator;
+    std::cout << "Finished successfully!!!" << std::endl;
+    std::cout << "Press any key to exit." << std::endl;
     std::cin.get();
     return 0;
 }

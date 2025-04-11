@@ -25,6 +25,7 @@ class BDDStatisticsGenerator {
 		void print_strategies();
 		int size_of_strategies();
 		void get_statistics();
+		void set_ids();
 	private:
 		std::string working_directory;
 		std::string data_directory;  // absolute path to directory with all pla files
