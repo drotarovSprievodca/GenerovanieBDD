@@ -64,13 +64,10 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
                     }
                     // probability that function is 1, c = 0, constant(s)
                     double P_f_1_c = (double)number_of_matches / number_of_lines;
-                    // std::cout << "P_f_1_c_" << (candidate_value ? "1" : "0") << ": " << std::to_string(number_of_matches) << " / " << std::to_string(number_of_lines) << std::endl;
                     partial_entropies += P_f_1_c * log_2(P_f_1_c);
                     
-
                     // probability that function is 1, c = 1, constant(s)
                     double P_f_0_c = (double)(number_of_max_occurences - number_of_matches) / number_of_lines;
-                    // std::cout << "P_f_0_c_" << (candidate_value ? "1" : "0") << ": " << std::to_string(number_of_max_occurences - number_of_matches) << " / " << std::to_string(number_of_lines) << std::endl;
                     partial_entropies += P_f_0_c * log_2(P_f_0_c);
                     
 
@@ -91,7 +88,6 @@ void EntropyBasedOrderDT::get_order_from_ODT(teddy::bss_manager& default_manager
             for (int kv : known_vars) {
                 constants += ",x" + std::to_string(kv);
             }
-            // std::cout << "H(f" << std::to_string(which_diagram) << "|x" << std::to_string(candidate_var) << constants << ") = " << std::to_string(H_f_c_kv) << std::endl;
 
             entropies_in_layer[H] = var;
         }
@@ -135,26 +131,10 @@ void EntropyBasedOrderDT::process_function(teddy::bss_manager& default_manager, 
 
     // save all conditional entropies from ODT of all variables in this function in list_for_reordering
     get_ce_of_all_vars_in_function(default_manager, list_for_reordering, diagram, which_function);
-    
-    /*
-    std::cout << "Before sorting: " << std::endl;
-    for (const auto& item : list_for_reordering) {
-        std::cout << item.variable << " " << item.conditional_entropy << std::endl;
-    }
-    */
-
-    //delete &diagram;
 
     // sort list of structs based on conditional entropy
     std::sort(list_for_reordering.begin(), list_for_reordering.end(),
         [this](const ce_var& a, const ce_var& b) { return this->compare_by_conditional_entropy_asc(a, b); });
-    
-    /*
-    std::cout << "After sorting: " << std::endl;
-    for (const auto& item : list_for_reordering) {
-        std::cout << item.variable << " " << item.conditional_entropy << std::endl;
-    }
-    */
     
     // variable from which we will be building ODT
     int root = list_for_reordering[0].variable;

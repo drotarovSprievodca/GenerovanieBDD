@@ -14,7 +14,6 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
     auto start = std::chrono::high_resolution_clock::now();
     this->sum_of_node_counts_in_function_for_all_rep = 0.0;
     for (int r = 0; r < this->number_of_replications; ++r) {
-        //std::cout << "Replication " << std::to_string(r) << std::endl;
         // list of indexes of all variables of this function
         std::vector<int> list_for_random_order = std::vector<int>(number_of_vars);
 
@@ -25,25 +24,13 @@ void RandomOrder::process_function(teddy::bss_manager& default_manager, int numb
         for (int j = 0; j < number_of_vars; ++j) {
             list_for_random_order[j] = j;
         }
-        /*
-        std::cout << "Before random ordering:" << std::endl;
-        for (int k = 0; k < number_of_vars; ++k) {
-            std::cout << std::to_string(list_for_random_order[k]) << " ";
-        }
-        std::cout << std::endl;
-        */
+
         // Shuffle the vector
         //  indexes of vector -> [0][1][2][3]
         //          variables -> |1||3||0||2|    
         // means that variable x0 is third in order, x1 is first and so on ...  
         std::shuffle(list_for_random_order.begin(), list_for_random_order.end(), eng);
-        /*
-        std::cout << "After random ordering:" << std::endl;
-        for (int k = 0; k < number_of_vars; ++k) {
-            std::cout << std::to_string(list_for_random_order[k]) << " ";
-        }
-        std::cout << std::endl;
-        */
+
         // vector with new order in teddy format 
         std::vector<teddy::int32> random_order = std::vector<teddy::int32>(number_of_vars);
 

@@ -22,36 +22,8 @@ void DerivativesBasedOrder::get_td_of_all_vars_in_function(teddy::bss_manager& d
         teddy::bss_manager::diagram_t dpbd_any_change = default_manager.dpld({ i, 0, 1 }, teddy::dpld::basic_undirectional(), diagram);
         // number of ones in undirectional derivative
         int number_of_ones_any_change = default_manager.satisfy_all<std::vector<int>>(1, dpbd_any_change).size() / 2;
-        // number of zeros in undirectional derivative
-        //int number_of_zeros_any_change = default_manager.satisfy_all<std::vector<int>>(0, dpbd_any_change).size() / 2;
-        
-        /*
-        std::vector<std::vector<int>> vars_with_ones_any_change = default_manager.satisfy_all<std::vector<int>>(1, dpbd_any_change);
-        std::cout << "Number of ones in dpbd_any_change: " << number_of_ones_any_change << std::endl;
-
-        for (auto var : vars_with_ones_any_change) {
-            for (int i = 0; i < var.size(); ++i) {
-                std::cout << var[i];
-            }
-            std::cout << " ";
-        }
-        std::cout << "" << std::endl;
-
-
-        std::vector<std::vector<int>> vars_with_zeros_any_change = default_manager.satisfy_all<std::vector<int>>(0, dpbd_any_change);
-        std::cout << "Number of zeros in dpbd_any_change: " << number_of_zeros_any_change << std::endl;
-
-        for (auto var : vars_with_zeros_any_change) {
-            for (int i = 0; i < var.size(); ++i) {
-                std::cout << var[i];
-            }
-            std::cout << " ";
-        }
-        std::cout << "" << std::endl;
-        */
-
+     
         double true_density = (double)number_of_ones_any_change / (std::pow(2, default_manager.get_var_count()) / 2);
-        //std::cout << "True density for f" << std::to_string(which_diagram) << " and variable x" << std::to_string(i) << " is: " << std::to_string(true_density) << std::endl;
 
         td_var var = td_var();
         var.true_density = true_density;
@@ -76,14 +48,6 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
 
     // save all true densities of all variables in this function in list_for_reordering
     get_td_of_all_vars_in_function(default_manager, list_for_reordering, diagram, which_function);
-    /*
-    std::cout << "Before sorting: " << std::endl;
-    for (const auto& item : list_for_reordering) {
-        std::cout << item.variable << " " << item.true_density << std::endl;
-    }
-    */
-
-    //delete &diagram;
 
     // sort list of structs based on true density
     if (this->ascending) {
@@ -94,12 +58,6 @@ void DerivativesBasedOrder::process_function(teddy::bss_manager& default_manager
             [this](const td_var& a, const td_var& b) { return this->compare_by_true_density_desc(a, b); });
     }
 
-    /*
-    std::cout << "After sorting: " << std::endl;
-    for (const auto& item : list_for_reordering) {
-        std::cout << item.variable << " " << item.true_density << std::endl;
-    }
-    */
     // vector with new order in teddy format 
     std::vector<teddy::int32> order_after = std::vector<teddy::int32>(number_of_vars);
 

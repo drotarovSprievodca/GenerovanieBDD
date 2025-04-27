@@ -36,15 +36,6 @@ void EntropyBasedOrder::get_ce_of_all_vars_in_function(teddy::bss_manager& defau
         std::vector<std::vector<bool>> variables_of_function = default_manager.satisfy_all<std::vector<bool>>(save_ones ? 1 : 0, diagram);
         
         double P_that_var_is_one_or_zero = 1.0 / 2.0;
-        
-        /*
-        for (std::vector<bool> variables_of_one_case : variables_of_function) {
-            for (bool variable : variables_of_one_case) {
-                std::cout << variable << " ";
-            }
-            std::cout << std::endl;
-        }
-        */
 
         // number of ones in i-th variable column of full truth table of function 
         // but only where function evaluates to 1 if <save_ones> is true or to 0 if <save_ones> is false
@@ -101,20 +92,10 @@ void EntropyBasedOrder::get_ce_of_all_vars_in_function(teddy::bss_manager& defau
             P_f_1_xi_0 = 1.0 - P_f_0_xi_0;
         }
 
-        /*
-        std::cout << "x" << std::to_string(i) << std::endl;
-        std::cout << std::to_string(P_f_0_xi_0) << std::endl;
-        std::cout << std::to_string(P_f_1_xi_0) << std::endl;
-        std::cout << std::to_string(P_f_0_xi_1) << std::endl;
-        std::cout << std::to_string(P_f_1_xi_1) << std::endl;
-        */
-
         double H_f_xi_0 = - 1.0 * (P_f_0_xi_0 * log_2(P_f_0_xi_0) + P_f_1_xi_0 * log_2(P_f_1_xi_0));
         double H_f_xi_1 = - 1.0 * (P_f_0_xi_1 * log_2(P_f_0_xi_1) + P_f_1_xi_1 * log_2(P_f_1_xi_1));
 
         double H_f_xi = P_that_var_is_one_or_zero * H_f_xi_0 + P_that_var_is_one_or_zero * H_f_xi_1;
-
-        //std::cout << "H(f" << std::to_string(which_diagram) << "|x" << std::to_string(i) <<  ") = " << std::to_string(H_f_xi) << std::endl;
 
         ce_var var = ce_var();
         var.conditional_entropy = H_f_xi;
@@ -139,23 +120,11 @@ void EntropyBasedOrder::process_function(teddy::bss_manager& default_manager, in
 
     // save all conditional entropies of all variables in this function in list_for_reordering
     get_ce_of_all_vars_in_function(default_manager, list_for_reordering, diagram, which_function);
-    /*
-    std::cout << "Before sorting: " << std::endl;
-    for (const auto& item : list_for_reordering) {
-        std::cout << item.variable << " " << item.conditional_entropy << std::endl;
-    }
-    */
-    //delete &diagram;
 
     // sort list of structs based on conditional entropy
     std::sort(list_for_reordering.begin(), list_for_reordering.end(), 
         [this](const ce_var& a, const ce_var& b) { return this->compare_by_conditional_entropy_asc(a, b); });
-    /*
-    std::cout << "After sorting: " << std::endl;
-    for (const auto& item : list_for_reordering) {
-        std::cout << item.variable << " " << item.conditional_entropy << std::endl;
-    }
-    */
+
     // vector with new order in teddy format 
     std::vector<teddy::int32> order_after = std::vector<teddy::int32>(number_of_vars);
 

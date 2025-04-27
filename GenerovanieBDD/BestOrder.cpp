@@ -37,14 +37,6 @@ void BestOrder::process_function(teddy::bss_manager& default_manager, int number
         order_manager.set_auto_reorder(false);
         teddy::bss_manager::diagram_t diagram_after = order_manager.from_pla(*pla, teddy::fold_type::Tree)[which_function];
         int node_count = order_manager.get_node_count(diagram_after);
-
-        /*
-        for (int var = 0; var < number_of_vars; ++var) {
-            std::cout << "x" << std::to_string(order[var]);
-        }
-        std::cout << '\0' << std::endl;
-        std::cout << "NODE COUNT: " << std::to_string(node_count) << std::endl;
-        */
         
         if (node_count < best_node_count_so_far) {
             best_node_count_so_far = node_count;

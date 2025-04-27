@@ -80,25 +80,9 @@ void DerivativesBasedHigherOrder::get_order_from_higher_order_derivatives(teddy:
                 index_in_blocks++;
             }
         }
-        /*
-        std::cout << "unused_vars:" << std::endl;
-        for (int var : unused_vars) {
-            std::cout << var << std::endl;
-        }
-
-        std::cout << "derived_function:" << std::endl;
-        for (int value : derived_function) {
-            std::cout << value << std::endl;
-        }
-        */
     }
     
     new_order.push_back(unused_vars[0]);
-    /*
-    for (int i = 0; i < new_order.size(); ++i) {
-        std::cout << new_order[i] << std::endl;
-    }
-    */
     for (int i = 0; i < new_order.size(); ++i) {
         order_of_vars_from_HOD[i] = new_order[i];
     }
